@@ -32,35 +32,23 @@ class InkStroke {
         if var p1 = points.first {
             path.move(to: p1)
             
-            for i in 1..<points.count {
-                let p2 = points[i]
-                let midPoint = getMidPoint(p1, p2)
+            if points.count < 2 {
+                for i in 0..<points.count {
+                    path.addLine(to: points[i])
+                }
+            } else {
+                for i in 1..<(points.count-1) {
+                    let p2 = points[i]
+                    let p3 = points[i+1]
                 
-                path.addQuadCurve(to: midPoint, controlPoint: getControlPoint(midPoint, p1))
-                path.addQuadCurve(to: p2, controlPoint: getControlPoint(midPoint, p2))
-                
-                p1 = p2
+                    path.addQuadCurve(to: p3, controlPoint: p2)
+                    
+                    p1 = p2
+                }
             }
             path.lineWidth = linewidth;
         }
         
         return path
     }
-}
-
-func getMidPoint(_ p1: CGPoint, _ p2: CGPoint) -> CGPoint {
-    return CGPoint(x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2)
-}
-
-func getControlPoint(_ p1: CGPoint, _ p2: CGPoint) -> CGPoint {
-    var controlPoint = getMidPoint(p1, p2)
-    let diffY = abs(p2.y - controlPoint.y)
-    
-    if p1.y < p2.y {
-        controlPoint.y += diffY
-    } else if p1.y > p2.y {
-        controlPoint.y -= diffY
-    }
-    
-    return controlPoint
 }
