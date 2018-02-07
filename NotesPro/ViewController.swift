@@ -46,4 +46,8 @@ extension ViewController: InkDelegate {
     func getStrokes(sender: UIView?) -> [InkStroke] {
         return strokes
     }
+    
+    func shouldFingerInk() -> Bool {
+        return false
+    }
 }

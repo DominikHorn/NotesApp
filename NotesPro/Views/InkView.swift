@@ -16,15 +16,21 @@ class InkView: UIView {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        delegate?.newStroke(start: touches.first!.preciseLocation(in: self), sender: self)
+        if (delegate?.shouldFingerInk() ?? false) || touches.first!.type == .stylus {
+            delegate?.newStroke(start: touches.first!.preciseLocation(in: self), sender: self)
+        }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        delegate?.addPoint(point: touches.first!.preciseLocation(in: self), sender: self)
+        if (delegate?.shouldFingerInk() ?? false) || touches.first!.type == .stylus {
+            delegate?.addPoint(point: touches.first!.preciseLocation(in: self), sender: self)
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        delegate?.endStroke(end: touches.first!.preciseLocation(in: self), sender: self)
+        if (delegate?.shouldFingerInk() ?? false) || touches.first!.type == .stylus {
+            delegate?.endStroke(end: touches.first!.preciseLocation(in: self), sender: self)
+        }
     }
     
     override func draw(_ rect: CGRect) {

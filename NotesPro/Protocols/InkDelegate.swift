@@ -13,5 +13,7 @@ protocol InkDelegate {
     func addPoint(point: CGPoint, sender: UIView?)
     func endStroke(end: CGPoint, sender: UIView?)
     
+    func shouldFingerInk() -> Bool
+    
     func getStrokes(sender: UIView?) -> [InkStroke]
 }
