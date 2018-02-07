@@ -15,6 +15,24 @@ class InkView: UIView {
     var currentColor = UIColor.blue
     var inkSources = [UITouchType.stylus]
 
+    var inktransform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+    
+    // MARK: -
+    // MARK: init
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        var pinchGesture  = UIPinchGestureRecognizer()
+        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchedView))
+        self.addGestureRecognizer(pinchGesture)
+    }
+    
+    @objc func pinchedView(sender: UIPinchGestureRecognizer) {
+        inktransform = CGAffineTransform(translationX: self.bounds.width/2, y: self.bounds.height/2).scaledBy(x: sender.scale, y: sender.scale).translatedBy(x: -self.bounds.width/2, y: -self.bounds.height/2)
+        setNeedsDisplay()
+    }
+    
+    
     // MARK: -
     // MARK: Touch Handling methods
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -68,11 +86,11 @@ class InkView: UIView {
             // Add all of the touches to the active stroke.
             for touch in touches {
                 if touch == touches.last {
-                    let sample = StrokeSample(point: touch.preciseLocation(in: self))
+                    let sample = StrokeSample(point: getLocation(for: touch.preciseLocation(in: self)))
                     stroke.add(sample: sample)
                 } else {
                     // If the touch is not the last one in the array, it was a coalesced touch.
-                    let sample = StrokeSample(point: touch.preciseLocation(in: self), coalesced: true)
+                    let sample = StrokeSample(point: getLocation(for: touch.preciseLocation(in: self)), coalesced: true)
                     stroke.add(sample: sample)
                 }
             }
@@ -85,15 +103,23 @@ class InkView: UIView {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             stroke.predictedSamples = []
             for touch in touches {
-                let sample = StrokeSample(point: touch.preciseLocation(in: self))
+                let sample = StrokeSample(point: getLocation(for: touch.preciseLocation(in: self)))
                 stroke.addPredicted(sample: sample)
             }
         }
     }
     
+    func getLocation(for point: CGPoint) -> CGPoint {
+        return point.applying(inktransform.inverted())
+    }
+    
     // MARK: -
     // MARK: rendering
     override func draw(_ rect: CGRect) {
+        // Do transforms
+        let context = UIGraphicsGetCurrentContext()!
+        context.concatenate(inktransform)
+        
         // draw all commited strokes
         if let strokes = delegate?.strokeCollection?.strokes {
             for stroke in strokes {
