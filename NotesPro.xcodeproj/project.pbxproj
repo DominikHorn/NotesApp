@@ -14,6 +14,8 @@
 		B403BBF0202B413F008DCA5D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B403BBEE202B413F008DCA5D /* LaunchScreen.storyboard */; };
 		B403BBFB202B413F008DCA5D /* NotesProTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B403BBFA202B413F008DCA5D /* NotesProTests.swift */; };
 		B403BC06202B413F008DCA5D /* NotesProUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B403BC05202B413F008DCA5D /* NotesProUITests.swift */; };
+		B403BC16202B41CE008DCA5D /* InkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B403BC13202B41AE008DCA5D /* InkView.swift */; };
+		B403BC1A202B505C008DCA5D /* InkStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = B403BC19202B505C008DCA5D /* InkStroke.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		B403BC01202B413F008DCA5D /* NotesProUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotesProUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B403BC05202B413F008DCA5D /* NotesProUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesProUITests.swift; sourceTree = "<group>"; };
 		B403BC07202B413F008DCA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B403BC13202B41AE008DCA5D /* InkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkView.swift; sourceTree = "<group>"; };
+		B403BC19202B505C008DCA5D /* InkStroke.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkStroke.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +101,8 @@
 		B403BBE4202B413F008DCA5D /* NotesPro */ = {
 			isa = PBXGroup;
 			children = (
+				B403BC18202B5005008DCA5D /* Data */,
+				B403BC17202B41D2008DCA5D /* Views */,
 				B403BBE5202B413F008DCA5D /* AppDelegate.swift */,
 				B403BBE7202B413F008DCA5D /* ViewController.swift */,
 				B403BBE9202B413F008DCA5D /* Main.storyboard */,
@@ -123,6 +129,22 @@
 				B403BC07202B413F008DCA5D /* Info.plist */,
 			);
 			path = NotesProUITests;
+			sourceTree = "<group>";
+		};
+		B403BC17202B41D2008DCA5D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B403BC13202B41AE008DCA5D /* InkView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B403BC18202B5005008DCA5D /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				B403BC19202B505C008DCA5D /* InkStroke.swift */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,6 +281,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B403BC1A202B505C008DCA5D /* InkStroke.swift in Sources */,
+				B403BC16202B41CE008DCA5D /* InkView.swift in Sources */,
 				B403BBE8202B413F008DCA5D /* ViewController.swift in Sources */,
 				B403BBE6202B413F008DCA5D /* AppDelegate.swift in Sources */,
 			);
