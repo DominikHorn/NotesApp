@@ -17,6 +17,11 @@ class InkStroke {
         linewidth = 2
     }
     
+    init (_ p: CGPoint, _ w: CGFloat) {
+        points = [p]
+        linewidth = w
+    }
+    
     func addPoint(newX: CGFloat, newY: CGFloat) {
         points.append(CGPoint(x: newX, y: newY))
     }
@@ -34,7 +39,7 @@ class InkStroke {
             }
             UIColor.darkGray.setFill()
             UIColor.darkGray.setStroke()
-            path.lineWidth = 3.0;
+            path.lineWidth = linewidth;
         }
         
         return path

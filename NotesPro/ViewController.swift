@@ -9,17 +9,41 @@
 import UIKit
 
 class ViewController: UIViewController {
+    @IBOutlet var inkview: InkView!
+    
+    // TODO: load this from actual model
+    var strokes: [InkStroke] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        // Set delegate of inkview
+        inkview.delegate = self
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
 }
 
+extension ViewController: InkDelegate {
+    func newStroke(start: CGPoint, sender: UIView?) {
+        strokes.append(InkStroke(start, CGFloat(arc4random_uniform(5) + 1)))
+        sender?.setNeedsDisplay()
+    }
+    
+    func addPoint(point: CGPoint, sender: UIView?) {
+        strokes[strokes.count-1].addPoint(point)
+        sender?.setNeedsDisplay()
+    }
+    
+    func endStroke(end: CGPoint, sender: UIView?) {
+        strokes[strokes.count-1].addPoint(end)
+        sender?.setNeedsDisplay()
+    }
+    
+    func getStrokes(sender: UIView?) -> [InkStroke] {
+        return strokes
+    }
+}

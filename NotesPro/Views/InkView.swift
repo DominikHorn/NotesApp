@@ -8,32 +8,30 @@
 
 import UIKit
 
-
 class InkView: UIView {
-    var strokes: [InkStroke] = []
+    var delegate: InkDelegate?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        strokes.append(InkStroke(touches.first!.preciseLocation(in: self)))
-        self.setNeedsDisplay()
+        delegate?.newStroke(start: touches.first!.preciseLocation(in: self), sender: self)
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        strokes[strokes.count-1].addPoint((touches.first!.preciseLocation(in: self)))
-        self.setNeedsDisplay()
+        delegate?.addPoint(point: touches.first!.preciseLocation(in: self), sender: self)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        strokes[strokes.count-1].addPoint((touches.first!.preciseLocation(in: self)))
-        self.setNeedsDisplay()
+        delegate?.endStroke(end: touches.first!.preciseLocation(in: self), sender: self)
     }
     
     override func draw(_ rect: CGRect) {
-        for stroke in strokes {
-            stroke.getBezierPath().stroke()
+        if let strokes = delegate?.getStrokes(sender: self) {
+            for stroke in strokes {
+                stroke.getBezierPath().stroke()
+            }
         }
     }
 }
