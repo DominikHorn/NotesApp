@@ -30,6 +30,8 @@ class InkView: UIView {
     override func draw(_ rect: CGRect) {
         if let strokes = delegate?.getStrokes(sender: self) {
             for stroke in strokes {
+                stroke.color.setFill()
+                stroke.color.setStroke()
                 stroke.getBezierPath().stroke()
             }
         }

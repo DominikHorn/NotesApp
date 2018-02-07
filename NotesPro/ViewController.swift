@@ -29,7 +29,7 @@ class ViewController: UIViewController {
 
 extension ViewController: InkDelegate {
     func newStroke(start: CGPoint, sender: UIView?) {
-        strokes.append(InkStroke(start, CGFloat(arc4random_uniform(5) + 1)))
+        strokes.append(InkStroke(point: start, linewidth: 2, color: UIColor.blue))
         sender?.setNeedsDisplay()
     }
     
