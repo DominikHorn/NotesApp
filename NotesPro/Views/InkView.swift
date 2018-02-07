@@ -126,6 +126,8 @@ class InkView: UIView {
                 stroke.color.setStroke()
                 
                 let path = getPath(samples: stroke.samples)
+                path.lineCapStyle = .round
+                path.lineJoinStyle = .round
                 path.lineWidth = stroke.width
                 path.stroke()
             }
@@ -138,13 +140,16 @@ class InkView: UIView {
             
             // Draw commited part of stroke
             let path = getPath(samples: stroke.samples)
+            path.lineCapStyle = .round
+            path.lineJoinStyle = .round
             path.lineWidth = stroke.width
             path.stroke()
             
             // Draw predicted path if exists
             let predictedPath = getPath(samples: stroke.predictedSamples)
+            predictedPath .lineCapStyle = .round
+            path.lineJoinStyle = .round
             predictedPath.lineWidth = stroke.width
-            //predictedPath.stroke(with: .normal, alpha: 0.7)
             predictedPath.stroke()
         }
     }
