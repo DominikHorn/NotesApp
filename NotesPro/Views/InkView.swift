@@ -15,8 +15,12 @@ class InkView: UIView {
     var currentColor = UIColor.blue
     var inkSources = [UITouchType.stylus]
 
-    var inktransform = CGAffineTransform(scaleX: 1.0, y: 1.0)
-    
+    var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0) {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+
     // MARK: -
     // MARK: init
     required init?(coder aDecoder: NSCoder) {
@@ -25,11 +29,34 @@ class InkView: UIView {
         var pinchGesture  = UIPinchGestureRecognizer()
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchedView))
         self.addGestureRecognizer(pinchGesture)
+        
+        self.layer.drawsAsynchronously = true
+        
+        self.isMultipleTouchEnabled = true
     }
     
-    @objc func pinchedView(sender: UIPinchGestureRecognizer) {
-        inktransform = CGAffineTransform(translationX: self.bounds.width/2, y: self.bounds.height/2).scaledBy(x: sender.scale, y: sender.scale).translatedBy(x: -self.bounds.width/2, y: -self.bounds.height/2)
-        setNeedsDisplay()
+    var prevloc = CGPoint(x: 0, y: 0)
+    @objc func pinchedView(recog: UIPinchGestureRecognizer) {
+        if recog.state == .began {
+            prevloc = recog.location(in: self)
+        }
+        
+        if recog.state == .changed {
+            if recog.numberOfTouches == 2 {
+                let zc = recog.location(in: self).applying(inkTransform.inverted())
+                inkTransform = inkTransform.translatedBy(x: zc.x, y: zc.y).scaledBy(x: recog.scale, y: recog.scale).translatedBy(x: -zc.x, y: -zc.y)
+                recog.scale = 1
+                
+                var transl = recog.location(in: self)
+                transl.x -= prevloc.x
+                transl.y -= prevloc.y
+                inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
+                prevloc = recog.location(in: self)
+            } else {
+                recog.isEnabled = false
+                recog.isEnabled = true
+            }
+        }
     }
     
     
@@ -58,6 +85,25 @@ class InkView: UIView {
             if let predicted = event?.predictedTouches(for: touches.first!) {
                 setPredictionTouches(predicted)
             }
+        } else {
+            var transl = CGPoint(x: 0, y: 0)
+            if touches.count == 2 {
+                for touch in touches {
+                    let touchloc = touch.location(in: self)
+                    let prevloc = touch.previousLocation(in: self)
+                    transl.x += touchloc.x - prevloc.x
+                    transl.y += touchloc.y - prevloc.y
+                }
+                transl.x /= CGFloat(touches.count)
+                transl.y /= CGFloat(touches.count)
+            } else {
+                let l = touches.first!.location(in: self)
+                let pl = touches.first!.previousLocation(in: self)
+                transl.x = l.x - pl.x
+                transl.y = l.y - pl.y
+            }
+            
+            inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
         }
     }
     
@@ -86,11 +132,11 @@ class InkView: UIView {
             // Add all of the touches to the active stroke.
             for touch in touches {
                 if touch == touches.last {
-                    let sample = StrokeSample(point: getLocation(for: touch.preciseLocation(in: self)))
+                    let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
                     stroke.add(sample: sample)
                 } else {
                     // If the touch is not the last one in the array, it was a coalesced touch.
-                    let sample = StrokeSample(point: getLocation(for: touch.preciseLocation(in: self)), coalesced: true)
+                    let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()), coalesced: true)
                     stroke.add(sample: sample)
                 }
             }
@@ -103,22 +149,19 @@ class InkView: UIView {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             stroke.predictedSamples = []
             for touch in touches {
-                let sample = StrokeSample(point: getLocation(for: touch.preciseLocation(in: self)))
+                let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
                 stroke.addPredicted(sample: sample)
             }
         }
     }
     
-    func getLocation(for point: CGPoint) -> CGPoint {
-        return point.applying(inktransform.inverted())
-    }
-    
     // MARK: -
     // MARK: rendering
+    
     override func draw(_ rect: CGRect) {
         // Do transforms
         let context = UIGraphicsGetCurrentContext()!
-        context.concatenate(inktransform)
+        context.concatenate(inkTransform)
         
         // draw all commited strokes
         if let strokes = delegate?.strokeCollection?.strokes {
@@ -150,7 +193,7 @@ class InkView: UIView {
             predictedPath .lineCapStyle = .round
             path.lineJoinStyle = .round
             predictedPath.lineWidth = stroke.width
-            predictedPath.stroke()
+            predictedPath.stroke(with: .normal, alpha: 0.2)
         }
     }
     
