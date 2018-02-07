@@ -20,12 +20,21 @@ struct StrokeSample {
 
 class Stroke {
     var samples = [StrokeSample]()
+    var predictedSamples = [StrokeSample]()
     var width: CGFloat
     var color: UIColor
     
     init(linewidth: CGFloat, color: UIColor) {
         self.width = linewidth
         self.color = color
+    }
+    
+    func clearPrediction() {
+        predictedSamples = []
+    }
+    
+    func addPredicted(sample: StrokeSample) {
+        predictedSamples.append(sample)
     }
     
     func add(sample: StrokeSample) {

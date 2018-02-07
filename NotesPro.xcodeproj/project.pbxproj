@@ -107,7 +107,6 @@
 				B403BC18202B5005008DCA5D /* Data */,
 				B403BC17202B41D2008DCA5D /* Views */,
 				B403BBE5202B413F008DCA5D /* AppDelegate.swift */,
-				B403BBE7202B413F008DCA5D /* ViewController.swift */,
 				B403BBE9202B413F008DCA5D /* Main.storyboard */,
 				B403BBEC202B413F008DCA5D /* Assets.xcassets */,
 				B403BBEE202B413F008DCA5D /* LaunchScreen.storyboard */,
@@ -137,6 +136,7 @@
 		B403BC17202B41D2008DCA5D /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B403BBE7202B413F008DCA5D /* ViewController.swift */,
 				B403BC13202B41AE008DCA5D /* InkView.swift */,
 			);
 			path = Views;

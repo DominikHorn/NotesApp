@@ -36,6 +36,10 @@ class InkView: UIView {
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
             }
+            
+            if let predicted = event?.predictedTouches(for: touches.first!) {
+                setPredictionTouches(predicted)
+            }
         }
     }
     
@@ -67,15 +71,23 @@ class InkView: UIView {
                     let sample = StrokeSample(point: touch.preciseLocation(in: self))
                     stroke.add(sample: sample)
                 } else {
-                    // If the touch is not the last one in the array,
-                    //  it was a coalesced touch.
-                    let sample = StrokeSample(point: touch.preciseLocation(in: self),
-                                              coalesced: true)
+                    // If the touch is not the last one in the array, it was a coalesced touch.
+                    let sample = StrokeSample(point: touch.preciseLocation(in: self), coalesced: true)
                     stroke.add(sample: sample)
                 }
             }
             // Update the view.
             self.setNeedsDisplay()
+        }
+    }
+    
+    func setPredictionTouches(_ touches: [UITouch]) {
+        if let stroke = delegate?.strokeCollection?.activeStroke {
+            stroke.clearPrediction()
+            for touch in touches {
+                let sample = StrokeSample(point: touch.preciseLocation(in: self))
+                stroke.addPredicted(sample: sample)
+            }
         }
     }
     
@@ -95,7 +107,7 @@ class InkView: UIView {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             let path = getStrokePath(stroke: stroke)
             stroke.color.setStroke()
-            path.stroke(with: .normal, alpha: 0.3)
+            path.stroke(with: .normal, alpha: 0.7)
         }
     }
     
