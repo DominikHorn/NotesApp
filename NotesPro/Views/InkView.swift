@@ -83,7 +83,7 @@ class InkView: UIView {
     
     func setPredictionTouches(_ touches: [UITouch]) {
         if let stroke = delegate?.strokeCollection?.activeStroke {
-            stroke.clearPrediction()
+            stroke.predictedSamples = []
             for touch in touches {
                 let sample = StrokeSample(point: touch.preciseLocation(in: self))
                 stroke.addPredicted(sample: sample)
@@ -97,27 +97,40 @@ class InkView: UIView {
         // draw all commited strokes
         if let strokes = delegate?.strokeCollection?.strokes {
             for stroke in strokes {
-                let path = getStrokePath(stroke: stroke)
                 stroke.color.setStroke()
+                
+                let path = getPath(samples: stroke.samples)
+                path.lineWidth = stroke.width
                 path.stroke()
             }
         }
         
         // draw active stroke opaque
         if let stroke = delegate?.strokeCollection?.activeStroke {
-            let path = getStrokePath(stroke: stroke)
+            // Set stroke color
             stroke.color.setStroke()
-            path.stroke(with: .normal, alpha: 0.7)
+            
+            // Draw commited part of stroke
+            let path = getPath(samples: stroke.samples)
+            path.lineWidth = stroke.width
+            path.stroke()
+            
+            // Draw predicted path if exists
+            let predictedPath = getPath(samples: stroke.predictedSamples)
+            predictedPath.lineWidth = stroke.width
+            //predictedPath.stroke(with: .normal, alpha: 0.7)
+            predictedPath.stroke()
         }
     }
     
-    func getStrokePath(stroke: Stroke) -> UIBezierPath {
+    func getPath(samples: [StrokeSample]) -> UIBezierPath {
         let path = UIBezierPath()
-        path.lineWidth = stroke.width
-        path.move(to: stroke.samples[0].location)
-        
-        for i in 1..<stroke.samples.count {
-            path.addLine(to: stroke.samples[i].location)
+        if samples.count > 0 {
+            path.move(to: samples[0].location)
+            
+            for i in 1..<samples.count {
+                path.addLine(to: samples[i].location)
+            }
         }
         
         return path

@@ -29,10 +29,6 @@ class Stroke {
         self.color = color
     }
     
-    func clearPrediction() {
-        predictedSamples = []
-    }
-    
     func addPredicted(sample: StrokeSample) {
         predictedSamples.append(sample)
     }
