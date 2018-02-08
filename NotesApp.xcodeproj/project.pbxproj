@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B43672FA202C96BA0020CE9D /* blank.inkml in Resources */ = {isa = PBXBuildFile; fileRef = B43672F9202C96BA0020CE9D /* blank.inkml */; };
 		B43D64CA202CB49400C21603 /* PencilPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */; };
+		B46EAF1A202CC0CE00F0299B /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46EAF19202CC0CE00F0299B /* Globals.swift */; };
 		B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD4202C71A000AE066C /* AppDelegate.swift */; };
 		B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD6202C71A000AE066C /* DocumentBrowserViewController.swift */; };
 		B49B7AD9202C71A000AE066C /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD8202C71A000AE066C /* DocumentViewController.swift */; };
@@ -43,6 +44,7 @@
 /* Begin PBXFileReference section */
 		B43672F9202C96BA0020CE9D /* blank.inkml */ = {isa = PBXFileReference; lastKnownFileType = text; path = blank.inkml; sourceTree = "<group>"; };
 		B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilPickerViewController.swift; sourceTree = "<group>"; };
+		B46EAF19202CC0CE00F0299B /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		B49B7AD1202C71A000AE066C /* NotesApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotesApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B49B7AD4202C71A000AE066C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B49B7AD6202C71A000AE066C /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 			isa = PBXGroup;
 			children = (
 				B49B7B08202C71BB00AE066C /* Stroke.swift */,
+				B46EAF19202CC0CE00F0299B /* Globals.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -321,6 +324,7 @@
 				B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */,
 				B43D64CA202CB49400C21603 /* PencilPickerViewController.swift in Sources */,
 				B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */,
+				B46EAF1A202CC0CE00F0299B /* Globals.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
