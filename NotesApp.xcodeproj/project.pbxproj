@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B43672FA202C96BA0020CE9D /* blank.inkml in Resources */ = {isa = PBXBuildFile; fileRef = B43672F9202C96BA0020CE9D /* blank.inkml */; };
+		B43D64CA202CB49400C21603 /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43D64C9202CB49400C21603 /* ColorPickerViewController.swift */; };
+		B43D64CC202CB4E400C21603 /* ColorPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43D64CB202CB4E400C21603 /* ColorPickerDelegate.swift */; };
 		B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD4202C71A000AE066C /* AppDelegate.swift */; };
 		B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD6202C71A000AE066C /* DocumentBrowserViewController.swift */; };
 		B49B7AD9202C71A000AE066C /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD8202C71A000AE066C /* DocumentViewController.swift */; };
@@ -41,6 +43,8 @@
 
 /* Begin PBXFileReference section */
 		B43672F9202C96BA0020CE9D /* blank.inkml */ = {isa = PBXFileReference; lastKnownFileType = text; path = blank.inkml; sourceTree = "<group>"; };
+		B43D64C9202CB49400C21603 /* ColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
+		B43D64CB202CB4E400C21603 /* ColorPickerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerDelegate.swift; sourceTree = "<group>"; };
 		B49B7AD1202C71A000AE066C /* NotesApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotesApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B49B7AD4202C71A000AE066C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B49B7AD6202C71A000AE066C /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
@@ -154,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				B49B7B0D202C71F600AE066C /* InkDelegate.swift */,
+				B43D64CB202CB4E400C21603 /* ColorPickerDelegate.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -169,6 +174,7 @@
 		B49B7B0A202C71D600AE066C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B43D64C9202CB49400C21603 /* ColorPickerViewController.swift */,
 				B49B7AD8202C71A000AE066C /* DocumentViewController.swift */,
 				B49B7B0B202C71DB00AE066C /* InkView.swift */,
 			);
@@ -310,12 +316,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B43D64CC202CB4E400C21603 /* ColorPickerDelegate.swift in Sources */,
 				B49B7ADB202C71A000AE066C /* Document.swift in Sources */,
 				B49B7AD9202C71A000AE066C /* DocumentViewController.swift in Sources */,
 				B49B7B09202C71BB00AE066C /* Stroke.swift in Sources */,
 				B49B7B0C202C71DB00AE066C /* InkView.swift in Sources */,
 				B49B7B0E202C71F600AE066C /* InkDelegate.swift in Sources */,
 				B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */,
+				B43D64CA202CB49400C21603 /* ColorPickerViewController.swift in Sources */,
 				B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
