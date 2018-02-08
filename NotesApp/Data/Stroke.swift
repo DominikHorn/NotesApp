@@ -10,6 +10,7 @@ import UIKit
 
 // TODO: rework, should come from a central place in app
 var currentColor = UIColor.blue
+var currentLineWidth: CGFloat = 3.0
 
 struct StrokeSample {
     let location: CGPoint
