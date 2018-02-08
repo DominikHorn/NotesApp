@@ -9,12 +9,20 @@
 import UIKit
 
 class InkView: UIView {
-    var delegate: InkDelegate?
-    
+    var delegate: InkDelegate? {
+        didSet {
+            if let pdf = self.delegate?.getBackgroundPdfURL() {
+                let page = CGPDFDocument(pdf as CFURL)?.page(at: 1)
+                if let pageRect = page?.getBoxRect(.mediaBox) {
+                    cachedBackground = FastPDFView(bounds: CGRect(x: bounds.width/2 - pageRect.width, y: bounds.height/2 - pageRect.height, width: pageRect.width*2, height: pageRect.height*2))
+                    cachedBackground?.refresh(withPDF: pdf)
+                }
+            }
+        }
+    }
     var inkSources = [UITouchType.stylus]
 
-    // TODO: rework
-    var cachedBackground: UIImage?
+    var cachedBackground: FastPDFView?
     
     var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0) {
         didSet {
@@ -44,9 +52,6 @@ class InkView: UIView {
         
         if recog.state == .changed {
             if recog.numberOfTouches == 2 {
-                // Invalidate background image
-                cachedBackground = nil
-                
                 let zc = recog.location(in: self).applying(inkTransform.inverted())
                 inkTransform = inkTransform.translatedBy(x: zc.x, y: zc.y).scaledBy(x: recog.scale, y: recog.scale).translatedBy(x: -zc.x, y: -zc.y)
                 recog.scale = 1
@@ -59,6 +64,14 @@ class InkView: UIView {
             } else {
                 recog.isEnabled = false
                 recog.isEnabled = true
+            }
+        }
+        
+        if recog.state == .ended || recog.state == .cancelled || recog.state == .failed {
+            // Invalidate background image
+            if let url = delegate?.getBackgroundPdfURL() {
+                cachedBackground?.refresh(withPDF: url, scaleFac: inkTransform.a)
+                setNeedsDisplay()
             }
         }
     }
@@ -157,29 +170,6 @@ class InkView: UIView {
             }
         }
     }
-
-    func drawBackground(_ img: UIImage) {
-        img.draw(in: bounds)
-    }
-    
-    func drawPDF(fromUrl url: URL) -> UIImage? {
-        guard let document = CGPDFDocument(url as CFURL) else { return nil }
-        guard let page = document.page(at: 1) else { return nil }
-        
-        let pageRect = page.getBoxRect(.mediaBox)
-        let renderer = UIGraphicsImageRenderer(size: pageRect.size)
-        let img = renderer.image { ctx in
-            UIColor.white.set()
-            ctx.fill(pageRect)
-            
-            ctx.cgContext.translateBy(x: 0.0, y: pageRect.size.height)
-            ctx.cgContext.scaleBy(x: 1.0, y: -1.0)
-            
-            ctx.cgContext.drawPDFPage(page)
-        }
-        
-        return img
-    }
     
     // MARK: -
     // MARK: rendering
@@ -187,16 +177,14 @@ class InkView: UIView {
         // Do transforms
         let context = UIGraphicsGetCurrentContext()!
         context.concatenate(inkTransform)
+        context.interpolationQuality = .high
         
-        // Draw background
-        if cachedBackground == nil {
-            if let url = delegate?.getBackgroundPdfURL() {
-                cachedBackground = drawPDF(fromUrl: url)
-            }
-        }
-        
+        // Draw background if we have any
         if let background = cachedBackground {
-            drawBackground(background)
+            context.saveGState()
+            context.setShadow(offset: CGSize(width: 0, height: 5), blur: 10)
+            background.draw()
+            context.restoreGState()
         }
         
         // draw all commited strokes
@@ -204,11 +192,18 @@ class InkView: UIView {
             for stroke in strokes {
                 stroke.color.setStroke()
                 
-                let path = getPath(samples: stroke.samples)
-                path.lineCapStyle = .round
-                path.lineJoinStyle = .round
-                path.lineWidth = stroke.width
-                path.stroke()
+                // calc path if not existant
+                if stroke.path == nil{
+                    stroke.path = getPath(samples: stroke.samples)
+                }
+                
+                // draw path
+                if let path = stroke.path {
+                    path.lineCapStyle = .round
+                    path.lineJoinStyle = .round
+                    path.lineWidth = stroke.width
+                    path.stroke()
+                }
             }
         }
         

@@ -9,7 +9,7 @@
 import UIKit
 
 class Document: UIDocument {
-    let pdfURL = Bundle.main.url(forResource: "dotted", withExtension: "pdf")
+    let pdfURL = Bundle.main.url(forResource: "graphpaper", withExtension: "pdf")
     
     override func contents(forType typeName: String) throws -> Any {
         // Encode your document with an instance of NSData or NSFileWrapper

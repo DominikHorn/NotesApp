@@ -107,3 +107,9 @@ extension DocumentViewController {
         return document?.pdfURL
     }
 }
+
+extension DocumentViewController: UIBarPositioningDelegate {
+    func position(for bar: UIBarPositioning) -> UIBarPosition {
+        return .topAttached
+    }
+}

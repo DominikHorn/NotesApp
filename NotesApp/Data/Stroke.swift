@@ -24,6 +24,8 @@ class Stroke {
     var width: CGFloat
     var color: UIColor
     
+    var path: UIBezierPath?
+    
     init(linewidth: CGFloat, color: UIColor) {
         self.width = linewidth
         self.color = color
