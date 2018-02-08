@@ -11,7 +11,6 @@ import UIKit
 class InkView: UIView {
     var delegate: InkDelegate?
     
-    var currentLineWidth: CGFloat = 3.0
     var inkSources = [UITouchType.stylus]
 
     var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0) {
