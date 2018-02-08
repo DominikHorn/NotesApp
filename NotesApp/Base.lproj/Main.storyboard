@@ -49,12 +49,22 @@
                                 </textAttributes>
                                 <items>
                                     <navigationItem title="NotesApp" id="lSO-Jh-6zZ">
-                                        <barButtonItem key="leftBarButtonItem" title="Done" style="done" id="7oj-Aj-u7K">
-                                            <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <connections>
-                                                <action selector="dismissDocumentViewController" destination="M2k-L8-Olo" id="Tn4-tQ-BWb"/>
-                                            </connections>
-                                        </barButtonItem>
+                                        <leftBarButtonItems>
+                                            <barButtonItem title="Done" style="done" id="7oj-Aj-u7K">
+                                                <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <connections>
+                                                    <action selector="dismissDocumentViewController" destination="M2k-L8-Olo" id="Tn4-tQ-BWb"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem systemItem="compose" id="gxr-b1-ax9">
+                                                <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <connections>
+                                                    <segue destination="cZi-xR-ee8" kind="popoverPresentation" popoverAnchorBarButtonItem="gxr-b1-ax9" id="Saa-01-FMq">
+                                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                                    </segue>
+                                                </connections>
+                                            </barButtonItem>
+                                        </leftBarButtonItems>
                                         <rightBarButtonItems>
                                             <barButtonItem enabled="NO" systemItem="redo" id="wZg-KX-kNd">
                                                 <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -94,6 +104,102 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1029.5999999999999" y="653.52323838080963"/>
+        </scene>
+        <!--Color Picker-->
+        <scene sceneID="Jb1-Bp-Qks">
+            <objects>
+                <viewController autoresizesArchivedViewToFullSize="NO" title="Color Picker" modalPresentationStyle="currentContext" id="cZi-xR-ee8" customClass="ColorPickerViewController" customModule="NotesApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="aLp-a9-uCP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="225"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="rGj-83-Fv3">
+                                <rect key="frame" x="93" y="10" width="279" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="275" id="I5h-ju-esu"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="sliderChanged:" destination="cZi-xR-ee8" eventType="valueChanged" id="cbe-oU-XQ1"/>
+                                </connections>
+                            </slider>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="C23-M8-rC0">
+                                <rect key="frame" x="93" y="50" width="279" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="275" id="CHr-8R-bMk"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="sliderChanged:" destination="cZi-xR-ee8" eventType="valueChanged" id="j74-J1-bIf"/>
+                                </connections>
+                            </slider>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="wkP-l7-gEK">
+                                <rect key="frame" x="93" y="90" width="279" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="275" id="OtF-0D-8gE"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="sliderChanged:" destination="cZi-xR-ee8" eventType="valueChanged" id="dem-3e-xdk"/>
+                                </connections>
+                            </slider>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Red" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MsX-3Z-m5R">
+                                <rect key="frame" x="5" y="24" width="30" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Green" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="89G-5B-XaW">
+                                <rect key="frame" x="5" y="61" width="47" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Blue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hNV-h4-afR">
+                                <rect key="frame" x="5" y="101" width="34" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5dg-zN-0pS">
+                                <rect key="frame" x="5" y="142" width="50" height="50"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="adS-Hl-ij9"/>
+                                    <constraint firstAttribute="height" constant="50" id="mA0-m9-DC2"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="rGj-83-Fv3" firstAttribute="top" secondItem="1pL-42-5GM" secondAttribute="top" constant="10" id="10e-h9-zvi"/>
+                            <constraint firstAttribute="trailing" secondItem="89G-5B-XaW" secondAttribute="trailing" constant="323" id="54P-fo-zC6"/>
+                            <constraint firstItem="hNV-h4-afR" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1pL-42-5GM" secondAttribute="leading" id="6cl-pN-djO"/>
+                            <constraint firstItem="5dg-zN-0pS" firstAttribute="leading" secondItem="1pL-42-5GM" secondAttribute="leading" constant="5" id="9fi-E7-gW1"/>
+                            <constraint firstItem="5dg-zN-0pS" firstAttribute="top" secondItem="hNV-h4-afR" secondAttribute="bottom" constant="20" id="EO9-Zv-QhE"/>
+                            <constraint firstItem="C23-M8-rC0" firstAttribute="top" secondItem="rGj-83-Fv3" secondAttribute="bottom" constant="10" id="Jvn-3Z-Kcn"/>
+                            <constraint firstAttribute="trailing" secondItem="rGj-83-Fv3" secondAttribute="trailing" constant="5" id="NBy-uN-1LD"/>
+                            <constraint firstAttribute="trailing" secondItem="C23-M8-rC0" secondAttribute="trailing" constant="5" id="Qrx-DI-7Ow"/>
+                            <constraint firstItem="89G-5B-XaW" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1pL-42-5GM" secondAttribute="leading" id="UN3-Dk-p9w"/>
+                            <constraint firstItem="89G-5B-XaW" firstAttribute="top" secondItem="MsX-3Z-m5R" secondAttribute="bottom" constant="16" id="ZKC-tJ-9EW"/>
+                            <constraint firstItem="MsX-3Z-m5R" firstAttribute="top" secondItem="1pL-42-5GM" secondAttribute="top" constant="24" id="ZOH-Og-awB"/>
+                            <constraint firstAttribute="trailing" secondItem="wkP-l7-gEK" secondAttribute="trailing" constant="5" id="ed3-iF-VKF"/>
+                            <constraint firstAttribute="trailing" secondItem="MsX-3Z-m5R" secondAttribute="trailing" constant="340" id="fAA-gC-udC"/>
+                            <constraint firstAttribute="trailing" secondItem="hNV-h4-afR" secondAttribute="trailing" constant="336" id="j3M-9w-2Be"/>
+                            <constraint firstItem="MsX-3Z-m5R" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1pL-42-5GM" secondAttribute="leading" id="pgV-r8-Bvh"/>
+                            <constraint firstItem="wkP-l7-gEK" firstAttribute="top" secondItem="C23-M8-rC0" secondAttribute="bottom" constant="10" id="pot-7i-M9p"/>
+                            <constraint firstItem="5dg-zN-0pS" firstAttribute="top" secondItem="aLp-a9-uCP" secondAttribute="top" constant="142" id="rnF-34-bKw"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="1pL-42-5GM"/>
+                    </view>
+                    <value key="contentSizeForViewInPopover" type="size" width="375" height="225"/>
+                    <connections>
+                        <outlet property="blueSlider" destination="wkP-l7-gEK" id="u7q-hB-a7G"/>
+                        <outlet property="colorDisplay" destination="5dg-zN-0pS" id="BKs-HD-f4u"/>
+                        <outlet property="greenSlider" destination="C23-M8-rC0" id="1P3-vL-mAK"/>
+                        <outlet property="redSlider" destination="rGj-83-Fv3" id="gjy-lM-bNC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="U9u-lm-mja" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1393" y="-177"/>
         </scene>
     </scenes>
 </document>

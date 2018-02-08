@@ -8,6 +8,9 @@
 
 import UIKit
 
+// TODO: rework, should come from a central place in app
+var currentColor = UIColor.blue
+
 struct StrokeSample {
     let location: CGPoint
     let coalescedSample: Bool
