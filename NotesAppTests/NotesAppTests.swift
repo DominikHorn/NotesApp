@@ -1,15 +1,15 @@
 //
-//  NotesProTests.swift
-//  NotesProTests
+//  NotesAppTests.swift
+//  NotesAppTests
 //
-//  Created by Dominik Horn on 07.02.18.
+//  Created by Dominik Horn on 08.02.18.
 //  Copyright © 2018 Dominik Horn. All rights reserved.
 //
 
 import XCTest
-@testable import NotesPro
+@testable import NotesApp
 
-class NotesProTests: XCTestCase {
+class NotesAppTests: XCTestCase {
     
     override func setUp() {
         super.setUp()

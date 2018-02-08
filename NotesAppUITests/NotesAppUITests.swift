@@ -1,14 +1,14 @@
 //
-//  NotesProUITests.swift
-//  NotesProUITests
+//  NotesAppUITests.swift
+//  NotesAppUITests
 //
-//  Created by Dominik Horn on 07.02.18.
+//  Created by Dominik Horn on 08.02.18.
 //  Copyright © 2018 Dominik Horn. All rights reserved.
 //
 
 import XCTest
 
-class NotesProUITests: XCTestCase {
+class NotesAppUITests: XCTestCase {
         
     override func setUp() {
         super.setUp()
