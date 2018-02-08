@@ -14,7 +14,6 @@ class ColorPickerViewController: UIViewController {
     @IBOutlet weak var blueSlider: UISlider!
     @IBOutlet weak var colorDisplay: UIView!
     
-    var currentColor: UIColor?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -26,7 +25,6 @@ class ColorPickerViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         // TODO: sync with documentViewController
-        currentColor = UIColor.green
         colorUpdated()
     }
     
@@ -40,7 +38,7 @@ class ColorPickerViewController: UIViewController {
     // MARK: -
     // MARK: helper
     func colorUpdated(_ animated: Bool = false) {
-        if let colors = currentColor?.cgColor.components {
+        if let colors = currentColor.cgColor.components {
             redSlider.setValue(Float(colors[0]), animated: animated)
             greenSlider.setValue(Float(colors[1]), animated: animated)
             blueSlider.setValue(Float(colors[2]), animated: animated)
