@@ -10,4 +10,6 @@ import UIKit
 
 protocol InkDelegate {
     var strokeCollection: StrokeCollection? { get set }
+    
+    func acceptActiveStroke()
 }

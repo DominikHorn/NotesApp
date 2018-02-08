@@ -114,7 +114,7 @@ class InkView: UIView {
                 addSamples(for: coalesced)
             }
             // Accept the active stroke.
-            delegate?.strokeCollection?.acceptActiveStroke()
+            delegate?.acceptActiveStroke()
         }
     }
     

@@ -48,4 +48,10 @@ class StrokeCollection {
             activeStroke = nil
         }
     }
+    
+    func deleteLastStroke() -> Stroke? {
+        let stroke = strokes.last
+        strokes.removeLast()
+        return stroke
+    }
 }
