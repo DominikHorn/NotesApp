@@ -8,11 +8,24 @@
 
 import UIKit
 
-class DocumentViewController: UIViewController {
+class DocumentViewController: UIViewController, InkDelegate {
+    @IBOutlet weak var inkView: InkView!
     
-    @IBOutlet weak var documentNameLabel: UILabel!
+    var strokeCollection: StrokeCollection?
     
     var document: UIDocument?
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        strokeCollection = StrokeCollection()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        inkView.delegate = self
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -21,7 +34,7 @@ class DocumentViewController: UIViewController {
         document?.open(completionHandler: { (success) in
             if success {
                 // Display the content of the document, e.g.:
-                self.documentNameLabel.text = self.document?.fileURL.lastPathComponent
+                //self.documentNameLabel.text = self.document?.fileURL.lastPathComponent
             } else {
                 // Make sure to handle the failed import appropriately, e.g., by presenting an error message to the user.
             }
