@@ -32,7 +32,8 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     // MARK: UIDocumentBrowserViewControllerDelegate
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {
-        let newDocumentURL = Bundle.main.url(forResource: "blank", withExtension: "inkml")
+        // TODO: implement template chooser dialog
+        let newDocumentURL = Bundle.main.url(forResource: "dotted", withExtension: "inkml")
 
         // Set the URL for the new document here. Optionally, you can present a template chooser before calling the importHandler.
         // Make sure the importHandler is always called, even if the user cancels the creation request.

@@ -13,6 +13,9 @@ class InkView: UIView {
     
     var inkSources = [UITouchType.stylus]
 
+    // TODO: rework
+    var cachedBackground: UIImage?
+    
     var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0) {
         didSet {
             setNeedsDisplay()
@@ -41,6 +44,9 @@ class InkView: UIView {
         
         if recog.state == .changed {
             if recog.numberOfTouches == 2 {
+                // Invalidate background image
+                cachedBackground = nil
+                
                 let zc = recog.location(in: self).applying(inkTransform.inverted())
                 inkTransform = inkTransform.translatedBy(x: zc.x, y: zc.y).scaledBy(x: recog.scale, y: recog.scale).translatedBy(x: -zc.x, y: -zc.y)
                 recog.scale = 1
@@ -56,7 +62,6 @@ class InkView: UIView {
             }
         }
     }
-    
     
     // MARK: -
     // MARK: Touch Handling methods
@@ -152,14 +157,47 @@ class InkView: UIView {
             }
         }
     }
+
+    func drawBackground(_ img: UIImage) {
+        img.draw(in: bounds)
+    }
+    
+    func drawPDF(fromUrl url: URL) -> UIImage? {
+        guard let document = CGPDFDocument(url as CFURL) else { return nil }
+        guard let page = document.page(at: 1) else { return nil }
+        
+        let pageRect = page.getBoxRect(.mediaBox)
+        let renderer = UIGraphicsImageRenderer(size: pageRect.size)
+        let img = renderer.image { ctx in
+            UIColor.white.set()
+            ctx.fill(pageRect)
+            
+            ctx.cgContext.translateBy(x: 0.0, y: pageRect.size.height)
+            ctx.cgContext.scaleBy(x: 1.0, y: -1.0)
+            
+            ctx.cgContext.drawPDFPage(page)
+        }
+        
+        return img
+    }
     
     // MARK: -
     // MARK: rendering
-    
     override func draw(_ rect: CGRect) {
         // Do transforms
         let context = UIGraphicsGetCurrentContext()!
         context.concatenate(inkTransform)
+        
+        // Draw background
+        if cachedBackground == nil {
+            if let url = delegate?.getBackgroundPdfURL() {
+                cachedBackground = drawPDF(fromUrl: url)
+            }
+        }
+        
+        if let background = cachedBackground {
+            drawBackground(background)
+        }
         
         // draw all commited strokes
         if let strokes = delegate?.strokeCollection?.strokes {

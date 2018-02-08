@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B43672FA202C96BA0020CE9D /* blank.inkml in Resources */ = {isa = PBXBuildFile; fileRef = B43672F9202C96BA0020CE9D /* blank.inkml */; };
+		B43672FA202C96BA0020CE9D /* dotted.inkml in Resources */ = {isa = PBXBuildFile; fileRef = B43672F9202C96BA0020CE9D /* dotted.inkml */; };
 		B43D64CA202CB49400C21603 /* PencilPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */; };
 		B46EAF1A202CC0CE00F0299B /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46EAF19202CC0CE00F0299B /* Globals.swift */; };
+		B46EAF1C202CC16900F0299B /* dotted.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B46EAF1B202CC16900F0299B /* dotted.pdf */; };
 		B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD4202C71A000AE066C /* AppDelegate.swift */; };
 		B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD6202C71A000AE066C /* DocumentBrowserViewController.swift */; };
 		B49B7AD9202C71A000AE066C /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD8202C71A000AE066C /* DocumentViewController.swift */; };
@@ -42,9 +43,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B43672F9202C96BA0020CE9D /* blank.inkml */ = {isa = PBXFileReference; lastKnownFileType = text; path = blank.inkml; sourceTree = "<group>"; };
+		B43672F9202C96BA0020CE9D /* dotted.inkml */ = {isa = PBXFileReference; lastKnownFileType = text; path = dotted.inkml; sourceTree = "<group>"; };
 		B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilPickerViewController.swift; sourceTree = "<group>"; };
 		B46EAF19202CC0CE00F0299B /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
+		B46EAF1B202CC16900F0299B /* dotted.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = dotted.pdf; sourceTree = "<group>"; };
 		B49B7AD1202C71A000AE066C /* NotesApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotesApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B49B7AD4202C71A000AE066C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B49B7AD6202C71A000AE066C /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
@@ -93,7 +95,8 @@
 		B43672F8202C968F0020CE9D /* templates */ = {
 			isa = PBXGroup;
 			children = (
-				B43672F9202C96BA0020CE9D /* blank.inkml */,
+				B46EAF1B202CC16900F0299B /* dotted.pdf */,
+				B43672F9202C96BA0020CE9D /* dotted.inkml */,
 			);
 			path = templates;
 			sourceTree = "<group>";
@@ -127,7 +130,6 @@
 				B49B7B0A202C71D600AE066C /* Views */,
 				B49B7AD6202C71A000AE066C /* DocumentBrowserViewController.swift */,
 				B49B7AD4202C71A000AE066C /* AppDelegate.swift */,
-				B49B7ADA202C71A000AE066C /* Document.swift */,
 				B49B7ADC202C71A000AE066C /* Main.storyboard */,
 				B49B7ADF202C71A000AE066C /* Assets.xcassets */,
 				B49B7AE1202C71A000AE066C /* LaunchScreen.storyboard */,
@@ -167,6 +169,7 @@
 			children = (
 				B49B7B08202C71BB00AE066C /* Stroke.swift */,
 				B46EAF19202CC0CE00F0299B /* Globals.swift */,
+				B49B7ADA202C71A000AE066C /* Document.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -288,10 +291,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B43672FA202C96BA0020CE9D /* blank.inkml in Resources */,
+				B43672FA202C96BA0020CE9D /* dotted.inkml in Resources */,
 				B49B7AE3202C71A000AE066C /* LaunchScreen.storyboard in Resources */,
 				B49B7AE0202C71A000AE066C /* Assets.xcassets in Resources */,
 				B49B7ADE202C71A000AE066C /* Main.storyboard in Resources */,
+				B46EAF1C202CC16900F0299B /* dotted.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

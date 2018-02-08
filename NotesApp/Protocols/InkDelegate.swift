@@ -12,4 +12,5 @@ protocol InkDelegate {
     var strokeCollection: StrokeCollection? { get set }
     
     func acceptActiveStroke()
+    func getBackgroundPdfURL() -> URL?
 }

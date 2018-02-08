@@ -16,7 +16,7 @@ class DocumentViewController: UIViewController, InkDelegate {
     var strokeCollection: StrokeCollection?
     var undoman: UndoManager
     
-    var document: UIDocument?
+    var document: Document?
     
     // MARK: -
     // MARK: initializing
@@ -100,5 +100,10 @@ extension DocumentViewController {
         
         redoBarButton.isEnabled = true
         inkView.setNeedsDisplay()
+    }
+    
+    func getBackgroundPdfURL() -> URL? {
+        // TODO: change this based on page
+        return document?.pdfURL
     }
 }
