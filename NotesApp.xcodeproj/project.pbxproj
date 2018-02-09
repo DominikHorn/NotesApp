@@ -23,7 +23,6 @@
 		B49B7B09202C71BB00AE066C /* Stroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B08202C71BB00AE066C /* Stroke.swift */; };
 		B49B7B0C202C71DB00AE066C /* InkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B0B202C71DB00AE066C /* InkView.swift */; };
 		B49B7B0E202C71F600AE066C /* InkDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B0D202C71F600AE066C /* InkDelegate.swift */; };
-		B4DDB2EA202DA47000D40A7F /* FastPDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DDB2E9202DA47000D40A7F /* FastPDFView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,7 +65,6 @@
 		B49B7B08202C71BB00AE066C /* Stroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stroke.swift; sourceTree = "<group>"; };
 		B49B7B0B202C71DB00AE066C /* InkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InkView.swift; sourceTree = "<group>"; };
 		B49B7B0D202C71F600AE066C /* InkDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InkDelegate.swift; sourceTree = "<group>"; };
-		B4DDB2E9202DA47000D40A7F /* FastPDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastPDFView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,7 +180,6 @@
 				B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */,
 				B49B7AD8202C71A000AE066C /* DocumentViewController.swift */,
 				B49B7B0B202C71DB00AE066C /* InkView.swift */,
-				B4DDB2E9202DA47000D40A7F /* FastPDFView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -330,7 +327,6 @@
 				B49B7B0E202C71F600AE066C /* InkDelegate.swift in Sources */,
 				B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */,
 				B43D64CA202CB49400C21603 /* PencilPickerViewController.swift in Sources */,
-				B4DDB2EA202DA47000D40A7F /* FastPDFView.swift in Sources */,
 				B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */,
 				B46EAF1A202CC0CE00F0299B /* Globals.swift in Sources */,
 			);

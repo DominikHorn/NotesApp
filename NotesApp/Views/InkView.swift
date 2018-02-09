@@ -11,35 +11,42 @@ import UIKit
 class InkView: UIView {
     var delegate: InkDelegate? {
         didSet {
-            if let pdf = self.delegate?.getBackgroundPdfURL() {
-                let page = CGPDFDocument(pdf as CFURL)?.page(at: 1)
-                if let pageRect = page?.getBoxRect(.mediaBox) {
-                    cachedBackground = FastPDFView(bounds: CGRect(x: bounds.width/2 - pageRect.width, y: bounds.height/2 - pageRect.height, width: pageRect.width*2, height: pageRect.height*2))
-                    cachedBackground?.refresh(withPDF: pdf)
-                }
+            guard let pdf = delegate?.getBackgroundPdfURL() else { return }
+            guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
+            
+            let pageRect = page.getBoxRect(.mediaBox)
+            let renderer = UIGraphicsImageRenderer(size: CGSize(width: pageRect.width, height: pageRect.height))
+            self.cachedBackground = renderer.image { ctx in
+                // Draw background pdf
+                UIColor.white.setFill()
+                ctx.cgContext.interpolationQuality = .high
+                //ctx.cgContext.scaleBy(x: scaleFac, y: -scaleFac)
+                //ctx.cgContext.translateBy(x: 0, y: -pageRect.height)
+                ctx.cgContext.fill(pageRect)
+                ctx.cgContext.saveGState()
+                ctx.cgContext.setShadow(offset: CGSize(width: 0, height: 5), blur: 10)
+                ctx.cgContext.drawPDFPage(page)
+                ctx.cgContext.restoreGState()
             }
         }
     }
     var inkSources = [UITouchType.stylus]
-
-    var cachedBackground: FastPDFView?
     
-    var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0) {
-        didSet {
-            setNeedsDisplay()
-        }
-    }
-
+    var cachedBackground: UIImage?
+    var highQualityBackground: UIImage?
+    
+    private var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+    
     // MARK: -
     // MARK: init
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        self.addGestureRecognizer( UIPinchGestureRecognizer(target: self, action: #selector(pinchedView)))
-        
+        // Setup view
         self.layer.drawsAsynchronously = true
-        
         self.isMultipleTouchEnabled = true
+        
+        self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(pinchedView)))
     }
     
     var prevloc = CGPoint(x: 0, y: 0)
@@ -59,6 +66,9 @@ class InkView: UIView {
                 transl.y -= prevloc.y
                 inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
                 prevloc = recog.location(in: self)
+                
+                highQualityBackground = nil
+                setNeedsDisplay()
             } else {
                 recog.isEnabled = false
                 recog.isEnabled = true
@@ -66,11 +76,8 @@ class InkView: UIView {
         }
         
         if recog.state == .ended || recog.state == .cancelled || recog.state == .failed {
-            // Invalidate background image
-            if let url = delegate?.getBackgroundPdfURL() {
-                cachedBackground?.refresh(withPDF: url, scaleFac: inkTransform.a)
-                setNeedsDisplay()
-            }
+            updateBackground()
+            setNeedsDisplay()
         }
     }
     
@@ -118,6 +125,8 @@ class InkView: UIView {
             }
             
             inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
+            highQualityBackground = nil
+            setNeedsDisplay()
         }
     }
     
@@ -130,6 +139,7 @@ class InkView: UIView {
             // Accept the active stroke.
             delegate?.acceptActiveStroke()
         }
+        updateBackground()
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -154,8 +164,8 @@ class InkView: UIView {
                     stroke.add(sample: sample)
                 }
             }
-            // Update the view.
-            self.setNeedsDisplay()
+            
+            setNeedsDisplay()
         }
     }
     
@@ -171,32 +181,61 @@ class InkView: UIView {
     
     // MARK: -
     // MARK: rendering
-    override func draw(_ rect: CGRect) {
-        // Do transforms
-        let context = UIGraphicsGetCurrentContext()!
-        context.concatenate(inkTransform)
-        context.interpolationQuality = .high
-        
-        // Draw background if we have any
-        if let background = cachedBackground {
-            context.saveGState()
-            context.setShadow(offset: CGSize(width: 0, height: 5), blur: 10)
-            background.draw()
-            context.restoreGState()
-        }
-        
-        // draw all commited strokes
-        if let strokes = delegate?.strokeCollection?.strokes {
-            for stroke in strokes {
-                stroke.color.setStroke()
-                
-                // calc path if not existant
-                if stroke.path == nil{
-                    stroke.path = getPath(samples: stroke.samples)
+    func updateBackground() {
+        if highQualityBackground == nil {
+            print("\(Date()) Refreshing background")
+            
+            // Render high quality section of pdf background
+            // TODO: only do this when necessary (zoom > 1)
+            guard let pdf = delegate?.getBackgroundPdfURL() else { return }
+            guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
+            let pageRect = page.getBoxRect(.mediaBox)
+            
+            let renderSize = bounds.size
+            let renderer = UIGraphicsImageRenderer(size: renderSize)
+            DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
+                self.highQualityBackground = renderer.image { [unowned self] ctx in
+                    // Draw background pdf
+                    UIColor.white.setFill()
+                    ctx.cgContext.scaleBy(x: 1, y: -1)
+                    ctx.cgContext.translateBy(x: 0, y: -renderSize.height)
+                    ctx.cgContext.concatenate(self.inkTransform)
+                    ctx.cgContext.fill(pageRect)
+                    ctx.cgContext.drawPDFPage(page)
                 }
                 
-                // draw path
+                DispatchQueue.main.async {
+                    self.setNeedsDisplay()
+                }
+            }
+        }
+    }
+    
+    override func draw(_ rect: CGRect) {
+        // Do transforms
+        guard let background = cachedBackground else { return }
+        guard let pdf = delegate?.getBackgroundPdfURL() else { return }
+        guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
+        let pageRect = page.getBoxRect(.mediaBox)
+        let context = UIGraphicsGetCurrentContext()!
+        
+        context.interpolationQuality = .high
+        context.saveGState()
+        context.saveGState()
+        context.concatenate(inkTransform)
+        context.setShadow(offset: CGSize(width: 0, height: 5), blur: 10)
+        context.draw(background.cgImage!, in: pageRect)
+        context.restoreGState()
+        if let hqBackground = highQualityBackground {
+            context.draw(hqBackground.cgImage!, in: bounds)
+        }
+        context.concatenate(inkTransform)
+        
+        // draw inking
+        if let strokes = self.delegate?.strokeCollection?.strokes {
+            for stroke in strokes {
                 if let path = stroke.path {
+                    stroke.color.setStroke()
                     path.lineCapStyle = .round
                     path.lineJoinStyle = .round
                     path.lineWidth = stroke.width
@@ -205,37 +244,27 @@ class InkView: UIView {
             }
         }
         
-        // draw active stroke opaque
+        // draw active stroke
         if let stroke = delegate?.strokeCollection?.activeStroke {
             // Set stroke color
             stroke.color.setStroke()
             
-            // Draw commited part of stroke
-            let path = getPath(samples: stroke.samples)
-            path.lineCapStyle = .round
-            path.lineJoinStyle = .round
-            path.lineWidth = stroke.width
-            path.stroke()
+            // Draw known part of stroke
+            if let path = stroke.path {
+                path.lineCapStyle = .round
+                path.lineJoinStyle = .round
+                path.lineWidth = stroke.width
+                path.stroke()
+            }
             
             // Draw predicted path if exists
-            let predictedPath = getPath(samples: stroke.predictedSamples)
-            predictedPath .lineCapStyle = .round
-            path.lineJoinStyle = .round
-            predictedPath.lineWidth = stroke.width
-            predictedPath.stroke(with: .normal, alpha: 0.2)
-        }
-    }
-    
-    func getPath(samples: [StrokeSample]) -> UIBezierPath {
-        let path = UIBezierPath()
-        if samples.count > 0 {
-            path.move(to: samples[0].location)
-            
-            for i in 1..<samples.count {
-                path.addLine(to: samples[i].location)
+            if let predictedPath = stroke.predictedPath {
+                predictedPath.lineCapStyle = .round
+                predictedPath.lineJoinStyle = .round
+                predictedPath.lineWidth = stroke.width
+                predictedPath.stroke(with: .normal, alpha: 0.2)
             }
         }
-        
-        return path
+        context.restoreGState()
     }
 }
