@@ -33,6 +33,11 @@ class DocumentViewController: UIViewController, InkDelegate {
         
         // Make sure to correctly setup the delegate
         inkView.delegate = self
+        
+        let tapRecog = UITapGestureRecognizer(target: self, action: #selector(tappedToUndo))
+        tapRecog.numberOfTapsRequired = 2
+        tapRecog.numberOfTouchesRequired = 2
+        inkView.addGestureRecognizer(tapRecog)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -55,6 +60,10 @@ class DocumentViewController: UIViewController, InkDelegate {
         dismiss(animated: true) {
             self.document?.close(completionHandler: nil)
         }
+    }
+    
+    @objc func tappedToUndo() {
+        undo(nil)
     }
     
     @IBAction func undo(_ sender: UIBarButtonItem?) {

@@ -35,9 +35,7 @@ class InkView: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        var pinchGesture  = UIPinchGestureRecognizer()
-        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchedView))
-        self.addGestureRecognizer(pinchGesture)
+        self.addGestureRecognizer( UIPinchGestureRecognizer(target: self, action: #selector(pinchedView)))
         
         self.layer.drawsAsynchronously = true
         
