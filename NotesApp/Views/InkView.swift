@@ -21,7 +21,7 @@ class InkView: UIView {
         }
     }
     var inkSources = [UITouchType.stylus]
-
+    
     var cachedBackground: FastPDFView?
     
     var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0) {
@@ -29,14 +29,15 @@ class InkView: UIView {
             setNeedsDisplay()
         }
     }
-
+    
+    var straightLineTimer: Timer?
+    
     // MARK: -
     // MARK: init
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        self.addGestureRecognizer( UIPinchGestureRecognizer(target: self, action: #selector(pinchedView)))
-        
+        self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(pinchedView)))
         self.layer.drawsAsynchronously = true
         
         self.isMultipleTouchEnabled = true
@@ -74,6 +75,20 @@ class InkView: UIView {
         }
     }
     
+    func restartStraightLineTimer() {
+        straightLineTimer?.invalidate()
+        straightLineTimer = Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { [unowned self] t in
+            if let samples = self.delegate?.strokeCollection?.activeStroke?.samples {
+                if let firstSample = samples.first {
+                    self.delegate?.strokeCollection?.activeStroke?.samples = [firstSample, samples[samples.count - 1]]
+                    self.delegate?.strokeCollection?.activeStroke?.predictedSamples = []
+                    self.delegate?.strokeCollection?.activeStroke?.isStraight = true
+                    self.setNeedsDisplay()
+                }
+            }
+        }
+    }
+    
     // MARK: -
     // MARK: Touch Handling methods
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -87,11 +102,21 @@ class InkView: UIView {
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
             }
+            
+            restartStraightLineTimer()
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if inkSources.contains(touches.first!.type) {
+            if let prevloc = touches.first?.precisePreviousLocation(in: self) {
+                if let loc = touches.first?.preciseLocation(in: self) {
+                    if (loc.x - prevloc.x)*(loc.x - prevloc.x) + (loc.y - prevloc.y)*(loc.y - prevloc.y) > 1 {
+                        restartStraightLineTimer()
+                    }
+                }
+            }
+            
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
             }
@@ -123,6 +148,8 @@ class InkView: UIView {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if inkSources.contains(touches.first!.type) {
+            straightLineTimer?.invalidate()
+            
             // Accept the current stroke and add it to the stroke collection.
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
@@ -134,8 +161,15 @@ class InkView: UIView {
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         if inkSources.contains(touches.first!.type) {
+            straightLineTimer?.invalidate()
+            
             // Clear the last stroke.
-            delegate?.strokeCollection?.activeStroke = nil
+            if delegate?.strokeCollection?.activeStroke?.isStraight == false {
+                delegate?.strokeCollection?.activeStroke = nil
+                setNeedsDisplay()
+            } else {
+                delegate?.acceptActiveStroke()
+            }
         }
     }
     
@@ -143,15 +177,21 @@ class InkView: UIView {
     // MARK: helper
     func addSamples(for touches: [UITouch]) {
         if let stroke = delegate?.strokeCollection?.activeStroke {
-            // Add all of the touches to the active stroke.
-            for touch in touches {
-                if touch == touches.last {
-                    let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
-                    stroke.add(sample: sample)
-                } else {
-                    // If the touch is not the last one in the array, it was a coalesced touch.
-                    let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()), coalesced: true)
-                    stroke.add(sample: sample)
+            if stroke.isStraight {
+                if let last = touches.last {
+                    stroke.samples[stroke.samples.count - 1] = StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))
+                }
+            } else {
+                // Add all of the touches to the active stroke.
+                for touch in touches {
+                    if touch == touches.last {
+                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
+                        stroke.add(sample: sample)
+                    } else {
+                        // If the touch is not the last one in the array, it was a coalesced touch.
+                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()), coalesced: true)
+                        stroke.add(sample: sample)
+                    }
                 }
             }
             // Update the view.
@@ -205,7 +245,7 @@ class InkView: UIView {
             }
         }
         
-        // draw active stroke opaque
+        // draw active stroke
         if let stroke = delegate?.strokeCollection?.activeStroke {
             // Set stroke color
             stroke.color.setStroke()
@@ -218,11 +258,13 @@ class InkView: UIView {
             path.stroke()
             
             // Draw predicted path if exists
-            let predictedPath = getPath(samples: stroke.predictedSamples)
-            predictedPath .lineCapStyle = .round
-            path.lineJoinStyle = .round
-            predictedPath.lineWidth = stroke.width
-            predictedPath.stroke(with: .normal, alpha: 0.2)
+            if !stroke.isStraight {
+                let predictedPath = getPath(samples: stroke.predictedSamples)
+                predictedPath .lineCapStyle = .round
+                path.lineJoinStyle = .round
+                predictedPath.lineWidth = stroke.width
+                predictedPath.stroke(with: .normal, alpha: 0.2)
+            }
         }
     }
     
@@ -239,3 +281,4 @@ class InkView: UIView {
         return path
     }
 }
+

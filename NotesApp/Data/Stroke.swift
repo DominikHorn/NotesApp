@@ -23,6 +23,7 @@ class Stroke {
     var predictedSamples = [StrokeSample]()
     var width: CGFloat
     var color: UIColor
+    var isStraight: Bool = false
     
     var path: UIBezierPath?
     
