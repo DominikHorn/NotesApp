@@ -35,7 +35,7 @@ class DocumentViewController: UIViewController, InkDelegate {
         inkView.delegate = self
         
         let tapRecog = UITapGestureRecognizer(target: self, action: #selector(tappedToUndo))
-        tapRecog.numberOfTapsRequired = 2
+        tapRecog.numberOfTapsRequired = 1
         tapRecog.numberOfTouchesRequired = 2
         inkView.addGestureRecognizer(tapRecog)
     }
