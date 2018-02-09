@@ -9,10 +9,21 @@
 import UIKit
 
 class InkView: UIView {
-    var delegate: InkDelegate?
-    
+    var delegate: InkDelegate? {
+        didSet {
+            if let pdf = self.delegate?.getBackgroundPdfURL() {
+                let page = CGPDFDocument(pdf as CFURL)?.page(at: 1)
+                if let pageRect = page?.getBoxRect(.mediaBox) {
+                    cachedBackground = FastPDFView(bounds: CGRect(x: bounds.width/2 - pageRect.width, y: bounds.height/2 - pageRect.height, width: pageRect.width*2, height: pageRect.height*2))
+                    cachedBackground?.refresh(withPDF: pdf)
+                }
+            }
+        }
+    }
     var inkSources = [UITouchType.stylus]
 
+    var cachedBackground: FastPDFView?
+    
     var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0) {
         didSet {
             setNeedsDisplay()
@@ -55,8 +66,15 @@ class InkView: UIView {
                 recog.isEnabled = true
             }
         }
+        
+        if recog.state == .ended || recog.state == .cancelled || recog.state == .failed {
+            // Invalidate background image
+            if let url = delegate?.getBackgroundPdfURL() {
+                cachedBackground?.refresh(withPDF: url, scaleFac: inkTransform.a)
+                setNeedsDisplay()
+            }
+        }
     }
-    
     
     // MARK: -
     // MARK: Touch Handling methods
@@ -155,22 +173,37 @@ class InkView: UIView {
     
     // MARK: -
     // MARK: rendering
-    
     override func draw(_ rect: CGRect) {
         // Do transforms
         let context = UIGraphicsGetCurrentContext()!
         context.concatenate(inkTransform)
+        context.interpolationQuality = .high
+        
+        // Draw background if we have any
+        if let background = cachedBackground {
+            context.saveGState()
+            context.setShadow(offset: CGSize(width: 0, height: 5), blur: 10)
+            background.draw()
+            context.restoreGState()
+        }
         
         // draw all commited strokes
         if let strokes = delegate?.strokeCollection?.strokes {
             for stroke in strokes {
                 stroke.color.setStroke()
                 
-                let path = getPath(samples: stroke.samples)
-                path.lineCapStyle = .round
-                path.lineJoinStyle = .round
-                path.lineWidth = stroke.width
-                path.stroke()
+                // calc path if not existant
+                if stroke.path == nil{
+                    stroke.path = getPath(samples: stroke.samples)
+                }
+                
+                // draw path
+                if let path = stroke.path {
+                    path.lineCapStyle = .round
+                    path.lineJoinStyle = .round
+                    path.lineWidth = stroke.width
+                    path.stroke()
+                }
             }
         }
         

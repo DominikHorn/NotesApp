@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B43672FA202C96BA0020CE9D /* blank.inkml in Resources */ = {isa = PBXBuildFile; fileRef = B43672F9202C96BA0020CE9D /* blank.inkml */; };
+		B43672FA202C96BA0020CE9D /* graphpaper.inkml in Resources */ = {isa = PBXBuildFile; fileRef = B43672F9202C96BA0020CE9D /* graphpaper.inkml */; };
 		B43D64CA202CB49400C21603 /* PencilPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */; };
+		B449D9AD202DAF6E00F5A935 /* graphpaper.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B449D9AC202DAF6E00F5A935 /* graphpaper.pdf */; };
 		B46EAF1A202CC0CE00F0299B /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46EAF19202CC0CE00F0299B /* Globals.swift */; };
 		B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD4202C71A000AE066C /* AppDelegate.swift */; };
 		B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7AD6202C71A000AE066C /* DocumentBrowserViewController.swift */; };
@@ -22,6 +23,7 @@
 		B49B7B09202C71BB00AE066C /* Stroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B08202C71BB00AE066C /* Stroke.swift */; };
 		B49B7B0C202C71DB00AE066C /* InkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B0B202C71DB00AE066C /* InkView.swift */; };
 		B49B7B0E202C71F600AE066C /* InkDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B0D202C71F600AE066C /* InkDelegate.swift */; };
+		B4DDB2EA202DA47000D40A7F /* FastPDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DDB2E9202DA47000D40A7F /* FastPDFView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,8 +44,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B43672F9202C96BA0020CE9D /* blank.inkml */ = {isa = PBXFileReference; lastKnownFileType = text; path = blank.inkml; sourceTree = "<group>"; };
+		B43672F9202C96BA0020CE9D /* graphpaper.inkml */ = {isa = PBXFileReference; lastKnownFileType = text; path = graphpaper.inkml; sourceTree = "<group>"; };
 		B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilPickerViewController.swift; sourceTree = "<group>"; };
+		B449D9AC202DAF6E00F5A935 /* graphpaper.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = graphpaper.pdf; path = ../../../../../../../Downloads/graphpaper.pdf; sourceTree = "<group>"; };
 		B46EAF19202CC0CE00F0299B /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		B49B7AD1202C71A000AE066C /* NotesApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotesApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B49B7AD4202C71A000AE066C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -63,6 +66,7 @@
 		B49B7B08202C71BB00AE066C /* Stroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stroke.swift; sourceTree = "<group>"; };
 		B49B7B0B202C71DB00AE066C /* InkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InkView.swift; sourceTree = "<group>"; };
 		B49B7B0D202C71F600AE066C /* InkDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InkDelegate.swift; sourceTree = "<group>"; };
+		B4DDB2E9202DA47000D40A7F /* FastPDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastPDFView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,7 +97,8 @@
 		B43672F8202C968F0020CE9D /* templates */ = {
 			isa = PBXGroup;
 			children = (
-				B43672F9202C96BA0020CE9D /* blank.inkml */,
+				B449D9AC202DAF6E00F5A935 /* graphpaper.pdf */,
+				B43672F9202C96BA0020CE9D /* graphpaper.inkml */,
 			);
 			path = templates;
 			sourceTree = "<group>";
@@ -127,7 +132,6 @@
 				B49B7B0A202C71D600AE066C /* Views */,
 				B49B7AD6202C71A000AE066C /* DocumentBrowserViewController.swift */,
 				B49B7AD4202C71A000AE066C /* AppDelegate.swift */,
-				B49B7ADA202C71A000AE066C /* Document.swift */,
 				B49B7ADC202C71A000AE066C /* Main.storyboard */,
 				B49B7ADF202C71A000AE066C /* Assets.xcassets */,
 				B49B7AE1202C71A000AE066C /* LaunchScreen.storyboard */,
@@ -167,6 +171,7 @@
 			children = (
 				B49B7B08202C71BB00AE066C /* Stroke.swift */,
 				B46EAF19202CC0CE00F0299B /* Globals.swift */,
+				B49B7ADA202C71A000AE066C /* Document.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -177,6 +182,7 @@
 				B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */,
 				B49B7AD8202C71A000AE066C /* DocumentViewController.swift */,
 				B49B7B0B202C71DB00AE066C /* InkView.swift */,
+				B4DDB2E9202DA47000D40A7F /* FastPDFView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -288,8 +294,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B43672FA202C96BA0020CE9D /* blank.inkml in Resources */,
+				B43672FA202C96BA0020CE9D /* graphpaper.inkml in Resources */,
 				B49B7AE3202C71A000AE066C /* LaunchScreen.storyboard in Resources */,
+				B449D9AD202DAF6E00F5A935 /* graphpaper.pdf in Resources */,
 				B49B7AE0202C71A000AE066C /* Assets.xcassets in Resources */,
 				B49B7ADE202C71A000AE066C /* Main.storyboard in Resources */,
 			);
@@ -323,6 +330,7 @@
 				B49B7B0E202C71F600AE066C /* InkDelegate.swift in Sources */,
 				B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */,
 				B43D64CA202CB49400C21603 /* PencilPickerViewController.swift in Sources */,
+				B4DDB2EA202DA47000D40A7F /* FastPDFView.swift in Sources */,
 				B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */,
 				B46EAF1A202CC0CE00F0299B /* Globals.swift in Sources */,
 			);
