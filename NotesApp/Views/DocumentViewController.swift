@@ -86,7 +86,7 @@ extension DocumentViewController {
         }
         
         undoBarButton.isEnabled = true
-        redoBarButton.isEnabled = false
+        redoBarButton.isEnabled = undoman.canRedo
         strokeCollection?.acceptActiveStroke()
         inkView.setNeedsDisplay()
     }
