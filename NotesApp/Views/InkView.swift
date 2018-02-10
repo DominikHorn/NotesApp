@@ -11,29 +11,20 @@ import UIKit
 class InkView: UIView {
     var delegate: InkDelegate? {
         didSet {
-            guard let pdf = delegate?.getBackgroundPdfURL() else { return }
-            guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
-            
-            let pageRect = page.getBoxRect(.mediaBox)
-            let renderer = UIGraphicsImageRenderer(size: CGSize(width: pageRect.width, height: pageRect.height))
-            self.cachedBackground = renderer.image { ctx in
-                // Draw background pdf
-                UIColor.white.setFill()
-                ctx.cgContext.interpolationQuality = .high
-                //ctx.cgContext.scaleBy(x: scaleFac, y: -scaleFac)
-                //ctx.cgContext.translateBy(x: 0, y: -pageRect.height)
-                ctx.cgContext.fill(pageRect)
-                ctx.cgContext.saveGState()
-                ctx.cgContext.setShadow(offset: CGSize(width: 0, height: 5), blur: 10)
-                ctx.cgContext.drawPDFPage(page)
-                ctx.cgContext.restoreGState()
+            redrawBackground()
+        }
+    }
+    var inkSources = [UITouchType.stylus, UITouchType.direct]
+    var drawPredictedStroke = false
+    
+    var cachedBackground: UIImage?
+    var highQualityBackground: UIImage? {
+        didSet {
+            DispatchQueue.main.async {
+                self.setNeedsDisplay()
             }
         }
     }
-    var inkSources = [UITouchType.stylus]
-    
-    var cachedBackground: UIImage?
-    var highQualityBackground: UIImage?
     
     private var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0)
     
@@ -49,7 +40,8 @@ class InkView: UIView {
         self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(pinchedView)))
     }
     
-    var prevloc = CGPoint(x: 0, y: 0)
+    // Previous position of pinch
+    private var prevloc = CGPoint(x: 0, y: 0)
     @objc func pinchedView(recog: UIPinchGestureRecognizer) {
         if recog.state == .began {
             prevloc = recog.location(in: self)
@@ -67,8 +59,8 @@ class InkView: UIView {
                 inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
                 prevloc = recog.location(in: self)
                 
-                highQualityBackground = nil
-                setNeedsDisplay()
+                // This will also redraw the normal background
+                invalidateHighQualityBackground()
             } else {
                 recog.isEnabled = false
                 recog.isEnabled = true
@@ -76,8 +68,7 @@ class InkView: UIView {
         }
         
         if recog.state == .ended || recog.state == .cancelled || recog.state == .failed {
-            updateBackground()
-            setNeedsDisplay()
+            redrawHighQualityBackground()
         }
     }
     
@@ -125,21 +116,26 @@ class InkView: UIView {
             }
             
             inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
-            highQualityBackground = nil
-            setNeedsDisplay()
+            self.invalidateHighQualityBackground()
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if inkSources.contains(touches.first!.type) {
             // Accept the current stroke and add it to the stroke collection.
-            if let coalesced = event?.coalescedTouches(for: touches.first!) {
-                addSamples(for: coalesced)
-            }
+            //if let coalesced = event?.coalescedTouches(for: touches.first!) {
+            //    addSamples(for: coalesced)
+            //}
+            
             // Accept the active stroke.
             delegate?.acceptActiveStroke()
+            redrawBackground()
+            redrawHighQualityBackground()
+        } else {
+            if highQualityBackground == nil {
+                redrawHighQualityBackground()
+            }
         }
-        updateBackground()
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -165,6 +161,7 @@ class InkView: UIView {
                 }
             }
             
+            // Redraw current stroke
             setNeedsDisplay()
         }
     }
@@ -181,34 +178,79 @@ class InkView: UIView {
     
     // MARK: -
     // MARK: rendering
-    func updateBackground() {
-        if highQualityBackground == nil {
-            print("\(Date()) Refreshing background")
+    private func redrawBackground() {
+        guard let pdf = delegate?.getBackgroundPdfURL() else { return }
+        guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
+        
+        let pageRect = page.getBoxRect(.mediaBox)
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: pageRect.width*2, height: pageRect.height*2))
+        self.cachedBackground = renderer.image { ctx in
+            // Draw background pdf
+            UIColor.white.setFill()
+            ctx.cgContext.interpolationQuality = .high
+            ctx.cgContext.scaleBy(x: 2, y: -2)
+            ctx.cgContext.translateBy(x: 0, y: -pageRect.height)
+            ctx.cgContext.fill(pageRect)
+            ctx.cgContext.drawPDFPage(page)
             
-            // Render high quality section of pdf background
-            // TODO: only do this when necessary (zoom > 1)
-            guard let pdf = delegate?.getBackgroundPdfURL() else { return }
-            guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
-            let pageRect = page.getBoxRect(.mediaBox)
-            
-            let renderSize = bounds.size
-            let renderer = UIGraphicsImageRenderer(size: renderSize)
-            DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
-                self.highQualityBackground = renderer.image { [unowned self] ctx in
-                    // Draw background pdf
-                    UIColor.white.setFill()
-                    ctx.cgContext.scaleBy(x: 1, y: -1)
-                    ctx.cgContext.translateBy(x: 0, y: -renderSize.height)
-                    ctx.cgContext.concatenate(self.inkTransform)
-                    ctx.cgContext.fill(pageRect)
-                    ctx.cgContext.drawPDFPage(page)
-                }
-                
-                DispatchQueue.main.async {
-                    self.setNeedsDisplay()
+            // draw inking
+            if let strokes = self.delegate?.strokeCollection?.strokes {
+                for stroke in strokes {
+                    if let path = stroke.path {
+                        stroke.color.setStroke()
+                        path.lineCapStyle = .round
+                        path.lineJoinStyle = .round
+                        path.lineWidth = stroke.width
+                        path.stroke()
+                    }
                 }
             }
         }
+    }
+    
+    private func invalidateHighQualityBackground() {
+        self.highQualityBackground = nil
+    }
+    
+    private func redrawHighQualityBackground() {
+        // Render high quality section of pdf background
+        // TODO: only do this when necessary (zoom > 1)
+        guard let pdf = delegate?.getBackgroundPdfURL() else { return }
+        guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
+        let pageRect = page.getBoxRect(.mediaBox)
+        let renderSize = bounds.size
+        let renderer = UIGraphicsImageRenderer(size: renderSize)
+        
+        DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
+            self.highQualityBackground = renderer.image { [unowned self] ctx in
+                // Draw background pdf
+                UIColor.white.setFill()
+                ctx.cgContext.scaleBy(x: 1, y: -1)
+                ctx.cgContext.translateBy(x: 0, y: -renderSize.height)
+                ctx.cgContext.concatenate(self.inkTransform)
+                ctx.cgContext.fill(pageRect)
+                ctx.cgContext.drawPDFPage(page)
+                ctx.clip(to: pageRect)
+                
+                // draw inking
+                if let strokes = self.delegate?.strokeCollection?.strokes {
+                    for stroke in strokes {
+                        if let path = stroke.path {
+                            stroke.color.setStroke()
+                            path.lineCapStyle = .round
+                            path.lineJoinStyle = .round
+                            path.lineWidth = stroke.width
+                            path.stroke()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func fullRedraw() {
+        redrawBackground()
+        redrawHighQualityBackground()
     }
     
     override func draw(_ rect: CGRect) {
@@ -230,19 +272,7 @@ class InkView: UIView {
             context.draw(hqBackground.cgImage!, in: bounds)
         }
         context.concatenate(inkTransform)
-        
-        // draw inking
-        if let strokes = self.delegate?.strokeCollection?.strokes {
-            for stroke in strokes {
-                if let path = stroke.path {
-                    stroke.color.setStroke()
-                    path.lineCapStyle = .round
-                    path.lineJoinStyle = .round
-                    path.lineWidth = stroke.width
-                    path.stroke()
-                }
-            }
-        }
+        context.clip(to: pageRect)
         
         // draw active stroke
         if let stroke = delegate?.strokeCollection?.activeStroke {
@@ -259,10 +289,12 @@ class InkView: UIView {
             
             // Draw predicted path if exists
             if let predictedPath = stroke.predictedPath {
-                predictedPath.lineCapStyle = .round
-                predictedPath.lineJoinStyle = .round
-                predictedPath.lineWidth = stroke.width
-                predictedPath.stroke(with: .normal, alpha: 0.2)
+                if drawPredictedStroke {
+                    predictedPath.lineCapStyle = .round
+                    predictedPath.lineJoinStyle = .round
+                    predictedPath.lineWidth = stroke.width
+                    predictedPath.stroke(with: .normal, alpha: 0.2)
+                }
             }
         }
         context.restoreGState()

@@ -97,7 +97,7 @@ extension DocumentViewController {
         undoBarButton.isEnabled = true
         redoBarButton.isEnabled = undoman.canRedo
         strokeCollection?.acceptActiveStroke()
-        inkView.setNeedsDisplay()
+        inkView.fullRedraw()
     }
     
     func deleteLastStroke() {
@@ -108,7 +108,7 @@ extension DocumentViewController {
         }
         
         redoBarButton.isEnabled = true
-        inkView.setNeedsDisplay()
+        inkView.fullRedraw()
     }
     
     func getBackgroundPdfURL() -> URL? {
