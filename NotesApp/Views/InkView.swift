@@ -14,7 +14,7 @@ class InkView: UIView {
             redrawBackground()
         }
     }
-    var inkSources = [UITouchType.stylus, UITouchType.direct]
+    var inkSources = [UITouchType.stylus]
     var drawPredictedStroke = false
     
     var cachedBackground: UIImage?

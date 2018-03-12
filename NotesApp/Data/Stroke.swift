@@ -83,8 +83,10 @@ class StrokeCollection {
     }
     
     func deleteLastStroke() -> Stroke? {
-        let stroke = strokes.last
-        strokes.removeLast()
-        return stroke
+        if strokes.count > 0 {
+            return strokes.removeLast()
+        }
+        
+        return nil
     }
 }
