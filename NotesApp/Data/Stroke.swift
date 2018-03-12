@@ -19,17 +19,21 @@ struct StrokeSample {
 }
 
 class Stroke {
+    // Samples are actual samples that the user saw
     var samples = [StrokeSample]()
+    // Staged samples have not yet been displayed
+    private var stagedSamples = [StrokeSample]()
     var predictedSamples = [StrokeSample]()
     var width: CGFloat
     var color: UIColor
     
     private var pathStore: UIBezierPath?
-    private var pathIsDirty: Bool = false
+    fileprivate var pathIsDirty: Bool = false
     var path: UIBezierPath? {
         get {
             if pathIsDirty {
-                pathStore = calculatePath(samples: samples)
+                pathStore = calculatePath(samples: stagedSamples)
+                samples = stagedSamples
             }
             
             return pathStore
@@ -51,7 +55,7 @@ class Stroke {
     }
     
     func add(sample: StrokeSample) {
-        samples.append(sample)
+        stagedSamples.append(sample)
         
         // Force Path to update on next retrieval
         pathIsDirty = true
@@ -77,6 +81,7 @@ class StrokeCollection {
     
     func acceptActiveStroke() {
         if let stroke = activeStroke {
+            stroke.pathIsDirty = false
             strokes.append(stroke)
             activeStroke = nil
         }

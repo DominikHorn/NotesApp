@@ -122,11 +122,6 @@ class InkView: UIView {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if inkSources.contains(touches.first!.type) {
-            // Accept the current stroke and add it to the stroke collection.
-            //if let coalesced = event?.coalescedTouches(for: touches.first!) {
-            //    addSamples(for: coalesced)
-            //}
-            
             // Accept the active stroke.
             delegate?.acceptActiveStroke()
             redrawBackground()
