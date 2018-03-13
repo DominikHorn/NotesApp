@@ -88,7 +88,7 @@ class DocumentViewController: UIViewController, InkDelegate {
 }
 
 extension DocumentViewController {
-    func acceptActiveStroke() {
+    func acceptActiveStroke() {        
         undoman.registerUndo(withTarget: self) { $0.deleteLastStroke() }
         if !undoman.isRedoing {
             undoman.setActionName("Add stroke")

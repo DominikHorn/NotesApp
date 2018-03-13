@@ -26,6 +26,7 @@ class Stroke {
     var predictedSamples = [StrokeSample]()
     var width: CGFloat
     var color: UIColor
+    var isStraight: Bool = false
     
     private var pathStore: UIBezierPath?
     fileprivate var pathIsDirty: Bool = false
@@ -61,7 +62,12 @@ class Stroke {
         pathIsDirty = true
     }
     
-    private func calculatePath(samples: [StrokeSample]) -> UIBezierPath {
+    func set(samples: [StrokeSample]) {
+        stagedSamples = samples
+        predictedSamples = []
+    }
+    
+    func calculatePath(samples: [StrokeSample]) -> UIBezierPath {
         let path = UIBezierPath()
         if samples.count > 0 {
             path.move(to: samples[0].location)

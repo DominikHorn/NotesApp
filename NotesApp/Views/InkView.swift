@@ -16,7 +16,7 @@ class InkView: UIView {
     }
     var inkSources = [UITouchType.stylus]
     var drawPredictedStroke = false
-    
+
     var cachedBackground: UIImage?
     var highQualityBackground: UIImage? {
         didSet {
@@ -25,40 +25,41 @@ class InkView: UIView {
             }
         }
     }
-    
+
     private var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0)
-    
+    var straightLineTimer: Timer?
+
     // MARK: -
     // MARK: init
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
+
         // Setup view
         self.layer.drawsAsynchronously = true
         self.isMultipleTouchEnabled = true
-        
+
         self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(pinchedView)))
     }
-    
+
     // Previous position of pinch
     private var prevloc = CGPoint(x: 0, y: 0)
     @objc func pinchedView(recog: UIPinchGestureRecognizer) {
         if recog.state == .began {
             prevloc = recog.location(in: self)
         }
-        
+
         if recog.state == .changed {
             if recog.numberOfTouches == 2 {
                 let zc = recog.location(in: self).applying(inkTransform.inverted())
                 inkTransform = inkTransform.translatedBy(x: zc.x, y: zc.y).scaledBy(x: recog.scale, y: recog.scale).translatedBy(x: -zc.x, y: -zc.y)
                 recog.scale = 1
-                
+
                 var transl = recog.location(in: self)
                 transl.x -= prevloc.x
                 transl.y -= prevloc.y
                 inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
                 prevloc = recog.location(in: self)
-                
+
                 // This will also redraw the normal background
                 invalidateHighQualityBackground()
             } else {
@@ -66,12 +67,25 @@ class InkView: UIView {
                 recog.isEnabled = true
             }
         }
-        
+
         if recog.state == .ended || recog.state == .cancelled || recog.state == .failed {
             redrawHighQualityBackground()
         }
     }
-    
+
+    func restartStraightLineTimer() {
+        straightLineTimer?.invalidate()
+        straightLineTimer = Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { [unowned self] t in
+            if let samples = self.delegate?.strokeCollection?.activeStroke?.samples {
+                if let firstSample = samples.first {
+                    self.delegate?.strokeCollection?.activeStroke?.set(samples: [firstSample, samples[samples.count - 1]])
+                    self.delegate?.strokeCollection?.activeStroke?.isStraight = true
+                    self.setNeedsDisplay()
+                }
+            }
+        }
+    }
+
     // MARK: -
     // MARK: Touch Handling methods
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -79,21 +93,31 @@ class InkView: UIView {
             // Create a new stroke and make it the active stroke.
             let newStroke = Stroke(linewidth: currentLineWidth, color: currentColor)
             delegate?.strokeCollection?.activeStroke = newStroke
-            
+
             // The view does not support multitouch, so get the samples
             // for only the first touch in the event.
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
             }
+
+            restartStraightLineTimer()
         }
     }
-    
+
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if inkSources.contains(touches.first!.type) {
+            if let prevloc = touches.first?.precisePreviousLocation(in: self) {
+                if let loc = touches.first?.preciseLocation(in: self) {
+                    if (loc.x - prevloc.x)*(loc.x - prevloc.x) + (loc.y - prevloc.y)*(loc.y - prevloc.y) > 1 {
+                        restartStraightLineTimer()
+                    }
+                }
+            }
+
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
             }
-            
+
             if let predicted = event?.predictedTouches(for: touches.first!) {
                 setPredictionTouches(predicted)
             }
@@ -114,14 +138,16 @@ class InkView: UIView {
                 transl.x = l.x - pl.x
                 transl.y = l.y - pl.y
             }
-            
+
             inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
             self.invalidateHighQualityBackground()
         }
     }
-    
+
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if inkSources.contains(touches.first!.type) {
+            straightLineTimer?.invalidate()
+
             // Accept the active stroke.
             delegate?.acceptActiveStroke()
             redrawBackground()
@@ -132,35 +158,48 @@ class InkView: UIView {
             }
         }
     }
-    
+
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         if inkSources.contains(touches.first!.type) {
+            straightLineTimer?.invalidate()
+
             // Clear the last stroke.
-            delegate?.strokeCollection?.activeStroke = nil
+            if delegate?.strokeCollection?.activeStroke?.isStraight == false {
+                delegate?.strokeCollection?.activeStroke = nil
+                setNeedsDisplay()
+            } else {
+                delegate?.acceptActiveStroke()
+            }
         }
     }
-    
+
     // MARK: -
     // MARK: helper
     func addSamples(for touches: [UITouch]) {
         if let stroke = delegate?.strokeCollection?.activeStroke {
-            // Add all of the touches to the active stroke.
-            for touch in touches {
-                if touch == touches.last {
-                    let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
-                    stroke.add(sample: sample)
-                } else {
-                    // If the touch is not the last one in the array, it was a coalesced touch.
-                    let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()), coalesced: true)
-                    stroke.add(sample: sample)
+            if stroke.isStraight {
+                if let last = touches.last {
+                    stroke.samples[stroke.samples.count - 1] = StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))
+                }
+            } else {
+                // Add all of the touches to the active stroke.
+                for touch in touches {
+                    if touch == touches.last {
+                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
+                        stroke.add(sample: sample)
+                    } else {
+                        // If the touch is not the last one in the array, it was a coalesced touch.
+                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()), coalesced: true)
+                        stroke.add(sample: sample)
+                    }
                 }
             }
-            
+
             // Redraw current stroke
             setNeedsDisplay()
         }
     }
-    
+
     func setPredictionTouches(_ touches: [UITouch]) {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             stroke.predictedSamples = []
@@ -170,13 +209,13 @@ class InkView: UIView {
             }
         }
     }
-    
+
     // MARK: -
     // MARK: rendering
     private func redrawBackground() {
         guard let pdf = delegate?.getBackgroundPdfURL() else { return }
         guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
-        
+
         let pageRect = page.getBoxRect(.mediaBox)
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: pageRect.width*2, height: pageRect.height*2))
         self.cachedBackground = renderer.image { ctx in
@@ -187,7 +226,7 @@ class InkView: UIView {
             ctx.cgContext.translateBy(x: 0, y: -pageRect.height)
             ctx.cgContext.fill(pageRect)
             ctx.cgContext.drawPDFPage(page)
-            
+
             // draw inking
             if let strokes = self.delegate?.strokeCollection?.strokes {
                 for stroke in strokes {
@@ -202,11 +241,11 @@ class InkView: UIView {
             }
         }
     }
-    
+
     private func invalidateHighQualityBackground() {
         self.highQualityBackground = nil
     }
-    
+
     private func redrawHighQualityBackground() {
         // Render high quality section of pdf background
         // TODO: only do this when necessary (zoom > 1)
@@ -215,7 +254,7 @@ class InkView: UIView {
         let pageRect = page.getBoxRect(.mediaBox)
         let renderSize = bounds.size
         let renderer = UIGraphicsImageRenderer(size: renderSize)
-        
+
         DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
             self.highQualityBackground = renderer.image { [unowned self] ctx in
                 // Draw background pdf
@@ -226,7 +265,7 @@ class InkView: UIView {
                 ctx.cgContext.fill(pageRect)
                 ctx.cgContext.drawPDFPage(page)
                 ctx.clip(to: pageRect)
-                
+
                 // draw inking
                 if let strokes = self.delegate?.strokeCollection?.strokes {
                     for stroke in strokes {
@@ -242,12 +281,12 @@ class InkView: UIView {
             }
         }
     }
-    
+
     func fullRedraw() {
         redrawBackground()
         redrawHighQualityBackground()
     }
-    
+
     override func draw(_ rect: CGRect) {
         // Do transforms
         guard let background = cachedBackground else { return }
@@ -255,7 +294,7 @@ class InkView: UIView {
         guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
         let pageRect = page.getBoxRect(.mediaBox)
         let context = UIGraphicsGetCurrentContext()!
-        
+
         context.interpolationQuality = .high
         context.saveGState()
         context.saveGState()
@@ -268,7 +307,7 @@ class InkView: UIView {
         }
         context.concatenate(inkTransform)
         context.clip(to: pageRect)
-        
+
         // draw active stroke
         if let stroke = delegate?.strokeCollection?.activeStroke {
             // Set stroke color
@@ -281,7 +320,7 @@ class InkView: UIView {
                 path.lineWidth = stroke.width
                 path.stroke()
             }
-            
+
             // Draw predicted path if exists
             if let predictedPath = stroke.predictedPath {
                 if drawPredictedStroke {
