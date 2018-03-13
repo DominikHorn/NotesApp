@@ -1,0 +1,1 @@
+Having a lot of ink messes with rendering (bounces between perspectives) -> missing invalidation for high resolution cache
