@@ -121,7 +121,7 @@ class InkView: UIView {
             if let predicted = event?.predictedTouches(for: touches.first!) {
                 setPredictionTouches(predicted)
             }
-        } else {
+        } else if delegate?.strokeCollection?.activeStroke == nil {
             var transl = CGPoint(x: 0, y: 0)
             if touches.count == 2 {
                 for touch in touches {
