@@ -21,8 +21,6 @@ struct StrokeSample {
 class Stroke {
     // Samples are actual samples that the user saw
     var samples = [StrokeSample]()
-    // Staged samples have not yet been displayed
-    private var stagedSamples = [StrokeSample]()
     var predictedSamples = [StrokeSample]()
     var width: CGFloat
     var color: UIColor
@@ -33,8 +31,7 @@ class Stroke {
     var path: UIBezierPath? {
         get {
             if pathIsDirty {
-                pathStore = calculatePath(samples: stagedSamples)
-                samples = stagedSamples
+                pathStore = calculatePath(samples: samples)
             }
             
             return pathStore
@@ -56,14 +53,14 @@ class Stroke {
     }
     
     func add(sample: StrokeSample) {
-        stagedSamples.append(sample)
+        samples.append(sample)
         
         // Force Path to update on next retrieval
         pathIsDirty = true
     }
     
     func set(samples: [StrokeSample]) {
-        stagedSamples = samples
+        self.samples = samples
         predictedSamples = []
     }
     
