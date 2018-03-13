@@ -13,7 +13,11 @@ class PencilPickerViewController: UIViewController {
     @IBOutlet weak var greenSlider: UISlider!
     @IBOutlet weak var blueSlider: UISlider!
     @IBOutlet weak var widthSlider: UISlider!
-    @IBOutlet weak var colorDisplay: UIView!
+    @IBOutlet weak var redLabel: UILabel!
+    @IBOutlet weak var greenLabel: UILabel!
+    @IBOutlet weak var blueLabel: UILabel!
+    @IBOutlet weak var widthLabel: UILabel!
+    @IBOutlet weak var widthDisplay: UIView!
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -43,11 +47,13 @@ class PencilPickerViewController: UIViewController {
             redSlider.setValue(Float(colors[0]), animated: animated)
             greenSlider.setValue(Float(colors[1]), animated: animated)
             blueSlider.setValue(Float(colors[2]), animated: animated)
+            redLabel.text = "Red \(Int(colors[0] * 255))"
+            greenLabel.text = "Green \(Int(colors[1] * 255))"
+            blueLabel.text = "Blue \(Int(colors[2] * 255))"
         }
         
         widthSlider.setValue(Float(currentLineWidth), animated: animated)
-        
-        colorDisplay.backgroundColor = currentColor
-        colorDisplay.setNeedsDisplay()
+        widthLabel.text = String(format: "Width %.1f", Float(currentLineWidth))
+        widthDisplay.setNeedsDisplay()
     }
 }

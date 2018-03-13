@@ -22,7 +22,7 @@
 		B49B7B09202C71BB00AE066C /* Stroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B08202C71BB00AE066C /* Stroke.swift */; };
 		B49B7B0C202C71DB00AE066C /* InkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B0B202C71DB00AE066C /* InkView.swift */; };
 		B49B7B0E202C71F600AE066C /* InkDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B0D202C71F600AE066C /* InkDelegate.swift */; };
-		B4DDB2EA202DA47000D40A7F /* FastPDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DDB2E9202DA47000D40A7F /* FastPDFView.swift */; };
+		B4B48686205752D30048B237 /* PencilWidthDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B48685205752D30048B237 /* PencilWidthDisplay.swift */; };
 		B4DF228F203EEF8A00A1E8D3 /* graphpaper.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B4DF228E203EEF8A00A1E8D3 /* graphpaper.pdf */; };
 /* End PBXBuildFile section */
 
@@ -65,7 +65,7 @@
 		B49B7B08202C71BB00AE066C /* Stroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stroke.swift; sourceTree = "<group>"; };
 		B49B7B0B202C71DB00AE066C /* InkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InkView.swift; sourceTree = "<group>"; };
 		B49B7B0D202C71F600AE066C /* InkDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InkDelegate.swift; sourceTree = "<group>"; };
-		B4DDB2E9202DA47000D40A7F /* FastPDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastPDFView.swift; sourceTree = "<group>"; };
+		B4B48685205752D30048B237 /* PencilWidthDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilWidthDisplay.swift; sourceTree = "<group>"; };
 		B4DF228E203EEF8A00A1E8D3 /* graphpaper.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = graphpaper.pdf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -180,6 +180,7 @@
 			isa = PBXGroup;
 			children = (
 				B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */,
+				B4B48685205752D30048B237 /* PencilWidthDisplay.swift */,
 				B49B7AD8202C71A000AE066C /* DocumentViewController.swift */,
 				B49B7B0B202C71DB00AE066C /* InkView.swift */,
 			);
@@ -330,6 +331,7 @@
 				B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */,
 				B43D64CA202CB49400C21603 /* PencilPickerViewController.swift in Sources */,
 				B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */,
+				B4B48686205752D30048B237 /* PencilWidthDisplay.swift in Sources */,
 				B46EAF1A202CC0CE00F0299B /* Globals.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
