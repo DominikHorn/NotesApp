@@ -12,6 +12,13 @@ class InkView: UIView {
     var delegate: InkDelegate? {
         didSet {
             redrawBackground()
+            
+            // Center page initially
+            guard let pdf = delegate?.getBackgroundPdfURL() else { return }
+            guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
+            
+            let pageRect = page.getBoxRect(.mediaBox)
+            inkTransform = CGAffineTransform(translationX: self.bounds.width/2 - pageRect.width/2, y: 0)
         }
     }
     var inkSources = [UITouchType.stylus]
