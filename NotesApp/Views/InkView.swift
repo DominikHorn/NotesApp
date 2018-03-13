@@ -75,7 +75,7 @@ class InkView: UIView {
 
     func restartStraightLineTimer() {
         straightLineTimer?.invalidate()
-        straightLineTimer = Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { [unowned self] t in
+        straightLineTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [unowned self] t in
             if let samples = self.delegate?.strokeCollection?.activeStroke?.samples {
                 if let firstSample = samples.first {
                     self.delegate?.strokeCollection?.activeStroke?.set(samples: [firstSample, samples[samples.count - 1]])
