@@ -108,7 +108,7 @@ class InkView: UIView {
         if inkSources.contains(touches.first!.type) {
             if let prevloc = touches.first?.precisePreviousLocation(in: self) {
                 if let loc = touches.first?.preciseLocation(in: self) {
-                    if (loc.x - prevloc.x)*(loc.x - prevloc.x) + (loc.y - prevloc.y)*(loc.y - prevloc.y) > 1 {
+                    if (loc.x - prevloc.x)*(loc.x - prevloc.x) + (loc.y - prevloc.y)*(loc.y - prevloc.y) > 0.1 {
                         restartStraightLineTimer()
                     }
                 }
