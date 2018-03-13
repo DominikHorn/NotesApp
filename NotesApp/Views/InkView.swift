@@ -179,7 +179,7 @@ class InkView: UIView {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             if stroke.isStraight {
                 if let last = touches.last {
-                    stroke.samples[stroke.samples.count - 1] = StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))
+                    stroke.set(samples: [stroke.samples.first!, StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))])
                 }
             } else {
                 // Add all of the touches to the active stroke.
