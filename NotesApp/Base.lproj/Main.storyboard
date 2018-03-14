@@ -103,7 +103,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1029.5999999999999" y="653.52323838080963"/>
+            <point key="canvasLocation" x="660" y="654"/>
         </scene>
         <!--Pencil Picker-->
         <scene sceneID="Jb1-Bp-Qks">
@@ -224,7 +224,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="U9u-lm-mja" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1392.6258992805756" y="-177.69784172661872"/>
+            <point key="canvasLocation" x="660" y="-6"/>
         </scene>
     </scenes>
 </document>
