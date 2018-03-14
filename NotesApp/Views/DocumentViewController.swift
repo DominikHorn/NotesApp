@@ -87,6 +87,7 @@ class DocumentViewController: UIViewController, InkDelegate {
     }
 }
 
+// TODO: comment
 extension DocumentViewController {
     func acceptActiveStroke() {        
         undoman.registerUndo(withTarget: self) { $0.deleteLastStroke() }

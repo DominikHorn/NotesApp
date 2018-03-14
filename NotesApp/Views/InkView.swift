@@ -89,6 +89,12 @@ class InkView: UIView {
     }
 
     // MARK: -
+    // MARK: View Event Handeling
+    override func layoutSubviews() {
+        fullRedraw()
+    }
+    
+    // MARK: -
     // MARK: Touch Handling methods
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if inkSources.contains(touches.first!.type) {
