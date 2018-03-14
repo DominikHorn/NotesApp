@@ -23,15 +23,9 @@ class InkView: UIView {
     }
     var inkSources = [UITouchType.stylus]
     var drawPredictedStroke = false
-
+    
     var cachedBackground: UIImage?
-    var highQualityBackground: UIImage? {
-        didSet {
-            DispatchQueue.main.async {
-                self.setNeedsDisplay()
-            }
-        }
-    }
+    var highQualityBackground: UIImage?
 
     private var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0)
     var straightLineTimer: Timer?
@@ -68,7 +62,8 @@ class InkView: UIView {
                 prevloc = recog.location(in: self)
 
                 // This will also redraw the normal background
-                invalidateHighQualityBackground()
+                self.invalidateHighQualityBackground()
+                setNeedsDisplay()
             } else {
                 recog.isEnabled = false
                 recog.isEnabled = true
@@ -148,6 +143,11 @@ class InkView: UIView {
 
             inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
             self.invalidateHighQualityBackground()
+            setNeedsDisplay()
+        } else {
+            if highQualityBackground == nil {
+                redrawHighQualityBackground()
+            }
         }
     }
 
@@ -176,6 +176,10 @@ class InkView: UIView {
                 setNeedsDisplay()
             } else {
                 delegate?.acceptActiveStroke()
+            }
+        } else {
+            if highQualityBackground == nil {
+                redrawHighQualityBackground()
             }
         }
     }
@@ -286,6 +290,10 @@ class InkView: UIView {
                     }
                 }
             }
+            
+            DispatchQueue.main.async {
+                self.setNeedsDisplay()
+            }
         }
     }
 
@@ -302,7 +310,7 @@ class InkView: UIView {
         let pageRect = page.getBoxRect(.mediaBox)
         let context = UIGraphicsGetCurrentContext()!
 
-        context.interpolationQuality = .high
+        context.interpolationQuality = .default
         context.saveGState()
         context.saveGState()
         context.concatenate(inkTransform)
