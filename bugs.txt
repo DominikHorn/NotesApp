@@ -1,1 +1,5 @@
-Having a lot of ink messes with rendering (bounces between perspectives) -> missing invalidation for high resolution cache
+- Having a lot of ink can mess with rendering (bounces between perspectives)
+  -> missing invalidation for high resolution cache
+- dragging around can sometimes happen with less than 60 touchesMoved per second
+- stutternig/lagging on rendering of translation (related to above) and zooming (potentially related)
+  -> try commenting out the pdf rendering (?) and high quality rendering
