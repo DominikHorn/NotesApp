@@ -9,4 +9,4 @@
 import UIKit
 
 var currentColor = UIColor(displayP3Red: 0, green: 0, blue: 0.5, alpha: 1)
-var currentLineWidth: CGFloat = 1.3
+var currentLineWidth: CGFloat = 1.0
