@@ -10,8 +10,12 @@ import UIKit
 
 class DocumentViewController: UIViewController, InkDelegate {
     @IBOutlet weak var inkView: InkView!
+    @IBOutlet weak var inkScrollView: InkScrollView!
     @IBOutlet weak var undoBarButton: UIBarButtonItem!
     @IBOutlet weak var redoBarButton: UIBarButtonItem!
+    
+    // Touch types that trigger inking
+    var inkSources = [UITouchType.stylus]
     
     var strokeCollection: StrokeCollection?
     var undoman: UndoManager
@@ -19,7 +23,7 @@ class DocumentViewController: UIViewController, InkDelegate {
     var document: Document?
     
     // MARK: -
-    // MARK: initializing
+    // MARK: Lifecycle
     required init?(coder aDecoder: NSCoder) {
         strokeCollection = StrokeCollection()
         undoman = UndoManager()
@@ -38,6 +42,9 @@ class DocumentViewController: UIViewController, InkDelegate {
         tapRecog.numberOfTapsRequired = 1
         tapRecog.numberOfTouchesRequired = 2
         inkView.addGestureRecognizer(tapRecog)
+        
+        // Setup scrollview
+        inkScrollView.panGestureRecognizer.allowedTouchTypes = [UITouchType.direct.rawValue as NSNumber]
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -87,8 +94,13 @@ class DocumentViewController: UIViewController, InkDelegate {
     }
 }
 
-// TODO: comment
+// MARK: -
+// MARK: InkDelegate remainder
 extension DocumentViewController {
+    func shouldInkFor(touch: UITouch) -> Bool {
+        return inkSources.contains(touch.type)
+    }
+    
     func acceptActiveStroke() {        
         undoman.registerUndo(withTarget: self) { $0.deleteLastStroke() }
         if !undoman.isRedoing {
@@ -113,13 +125,29 @@ extension DocumentViewController {
     }
     
     func getBackgroundPdfURL() -> URL? {
-        // TODO: change this based on page
         return document?.pdfURL
     }
 }
 
+// MARK: -
+// MARK: UIBarPositioningDelegate
 extension DocumentViewController: UIBarPositioningDelegate {
     func position(for bar: UIBarPositioning) -> UIBarPosition {
         return .topAttached
     }
 }
+
+
+// MARK: -
+// MARK: UIScrollViewDelegate
+extension DocumentViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return inkView
+    }
+    
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        // TODO: other interface
+        inkView.fullRedraw()
+    }
+}
+

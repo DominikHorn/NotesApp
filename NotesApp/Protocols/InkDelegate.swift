@@ -9,8 +9,15 @@
 import UIKit
 
 protocol InkDelegate {
+    // Storage for strokes
     var strokeCollection: StrokeCollection? { get set }
     
+    // Whether or not inking should start for this touch
+    func shouldInkFor(touch: UITouch) -> Bool
+    
+    // Notification that view has determinded that stroke is finished
     func acceptActiveStroke()
+    
+    // Obtain background pdf URL
     func getBackgroundPdfURL() -> URL?
 }
