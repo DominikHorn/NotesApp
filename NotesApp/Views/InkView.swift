@@ -16,23 +16,16 @@ class InkView: UIView {
             guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
             
             let pageRect = page.getBoxRect(.mediaBox)
-            inkTransform = CGAffineTransform(translationX: self.bounds.width/2 - pageRect.width/2, y: 0)
-            fullRedraw()
+            delegate?.updateContentSize(pageRect.size)
+            setNeedsDisplay()
         }
     }
     
     // Whether or not to draw stroke prediction (Turning it on introduces horrible artifacts)
     var drawPredictedStroke = false
     
-    // Cached rendering for greatly increased performance
-    var cachedBackground: UIImage?
-    var highQualityBackground: UIImage?
-
     // Timer used for handy straight line drawing feature
     var straightLineTimer: Timer?
-    
-    // Transformation to properly center the ink TODO: remove this as is should be unnecessary
-    var inkTransform: CGAffineTransform = CGAffineTransform(translationX: 0, y: 0)
     
     // MARK: -
     // MARK: init
@@ -57,12 +50,6 @@ class InkView: UIView {
         }
     }
 
-    // MARK: -
-    // MARK: View Event Handeling
-    override func layoutSubviews() {
-        fullRedraw()
-    }
-    
     // MARK: -
     // MARK: Touch Handling methods
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -107,7 +94,7 @@ class InkView: UIView {
 
             // Accept the active stroke.
             delegate?.acceptActiveStroke()
-            fullRedraw() // TODO observer pattern/push to controller
+            setNeedsDisplay()
         }
     }
 
@@ -115,7 +102,7 @@ class InkView: UIView {
         if delegate?.shouldInkFor(touch: touches.first!) ?? false {
             straightLineTimer?.invalidate()
 
-            // TODO: Why?? Clear the last stroke.
+            // TODO: Figure out again why this happens ?? Clear the last stroke.
             if delegate?.strokeCollection?.activeStroke?.isStraight == false {
                 delegate?.strokeCollection?.activeStroke = nil
                 setNeedsDisplay()
@@ -127,24 +114,44 @@ class InkView: UIView {
 
     // MARK: -
     // MARK: helper
+    func draw(stroke: Stroke, showPredicted: Bool = false) {
+        if let path = stroke.path {
+            stroke.color.setStroke()
+            path.lineCapStyle = .round
+            path.lineJoinStyle = .round
+            path.lineWidth = stroke.width
+            path.stroke()
+        }
+        
+        // Draw predicted path if exists
+        if let predictedPath = stroke.predictedPath {
+            if showPredicted {
+                predictedPath.lineCapStyle = .round
+                predictedPath.lineJoinStyle = .round
+                predictedPath.lineWidth = stroke.width
+                predictedPath.stroke(with: .normal, alpha: 0.2)
+            }
+        }
+    }
     
-    // TODO: should this really be view? probably not -> push into controller via delegate pattern
+    
+    // TODO: push into controller via delegate pattern
     func addSamples(for touches: [UITouch]) {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             if stroke.isStraight {
                 if let last = touches.last {
                     // TODO: will this break?
-                    stroke.set(samples: [stroke.samples.first!, StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))])
+                    stroke.set(samples: [stroke.samples.first!, StrokeSample(point: last.preciseLocation(in: self))])
                 }
             } else {
                 // Add all of the touches to the active stroke.
                 for touch in touches {
                     if touch == touches.last {
-                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
+                        let sample = StrokeSample(point: touch.preciseLocation(in: self))
                         stroke.add(sample: sample)
                     } else {
                         // If the touch is not the last one in the array, it was a coalesced touch.
-                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()), coalesced: true)
+                        let sample = StrokeSample(point: touch.preciseLocation(in: self), coalesced: true)
                         stroke.add(sample: sample)
                     }
                 }
@@ -155,145 +162,37 @@ class InkView: UIView {
         }
     }
 
-    // TODO push into controller via delegate pattern
+    // TODO: push into controller via delegate pattern
     func setPredictionTouches(_ touches: [UITouch]) {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             stroke.predictedSamples = []
             for touch in touches {
-                let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
+                let sample = StrokeSample(point: touch.preciseLocation(in: self))
                 stroke.addPredicted(sample: sample)
             }
         }
     }
-
-    // MARK: -
-    // MARK: rendering
-    private func redrawBackground() {
-        guard let pdf = delegate?.getBackgroundPdfURL() else { return }
-        guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
-
-        let pageRect = page.getBoxRect(.mediaBox)
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: pageRect.width*2, height: pageRect.height*2))
-        self.cachedBackground = renderer.image { ctx in
-            // Draw background pdf
-            UIColor.white.setFill()
-            ctx.cgContext.interpolationQuality = .high
-            ctx.cgContext.scaleBy(x: 2, y: -2)
-            ctx.cgContext.translateBy(x: 0, y: -pageRect.height)
-            ctx.cgContext.fill(pageRect)
-            ctx.cgContext.drawPDFPage(page)
-
-            // draw inking
-            if let strokes = self.delegate?.strokeCollection?.strokes {
-                for stroke in strokes {
-                    if let path = stroke.path {
-                        stroke.color.setStroke()
-                        path.lineCapStyle = .round
-                        path.lineJoinStyle = .round
-                        path.lineWidth = stroke.width
-                        path.stroke()
-                    }
-                }
-            }
-        }
-    }
-
-    // TODO rework
-    private func invalidateHighQualityBackground() {
-        self.highQualityBackground = nil
-    }
-
-    // TODO rework
-    private func redrawHighQualityBackground() {
-        // TODO: handle with controller
-        /*// Render high quality section of pdf background
-        // TODO: only do this when necessary (zoom > 1)
-        guard let pdf = delegate?.getBackgroundPdfURL() else { return }
-        guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
-        let pageRect = page.getBoxRect(.mediaBox)
-        let renderSize = bounds.size
-        let renderer = UIGraphicsImageRenderer(size: renderSize)
-
-        DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
-            self.highQualityBackground = renderer.image { [unowned self] ctx in
-                // Draw background pdf
-                UIColor.white.setFill()
-                ctx.cgContext.scaleBy(x: 1, y: -1)
-                ctx.cgContext.translateBy(x: 0, y: -renderSize.height)
-                ctx.cgContext.concatenate(self.inkTransform)
-                ctx.cgContext.fill(pageRect)
-                ctx.cgContext.drawPDFPage(page)
-                ctx.clip(to: pageRect)
-
-                // draw inking
-                if let strokes = self.delegate?.strokeCollection?.strokes {
-                    for stroke in strokes {
-                        if let path = stroke.path {
-                            stroke.color.setStroke()
-                            path.lineCapStyle = .round
-                            path.lineJoinStyle = .round
-                            path.lineWidth = stroke.width
-                            path.stroke()
-                        }
-                    }
-                }
-            }
-            
-            DispatchQueue.main.async {
-                self.setNeedsDisplay()
-            }
-        }*/
-    }
-
-    // TODO: rework (maybe have setDirty() method that will redraw both in background thread)
-    func fullRedraw() {
-        redrawBackground()
-        redrawHighQualityBackground()
-    }
-
+    
     override func draw(_ rect: CGRect) {
         // Do transforms
-        guard let background = cachedBackground else { return }
-        guard let pdf = delegate?.getBackgroundPdfURL() else { return }
-        guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
+        guard let url = delegate?.getBackgroundPdfURL() else { return }
+        guard let document = CGPDFDocument(url as CFURL) else { return }
+        guard let page = document.page(at: 1) else { return }
         let pageRect = page.getBoxRect(.mediaBox)
         let context = UIGraphicsGetCurrentContext()!
-
-        context.interpolationQuality = .default
-        context.saveGState()
-        context.concatenate(inkTransform)
-        context.setShadow(offset: CGSize(width: 0, height: 5), blur: 10)
-        context.draw(background.cgImage!, in: pageRect)
-        context.setShadow(offset: CGSize(width: 0, height: 0), blur: 0) // TODO better way to disable shadows
-        // TODO rework
-        if let hqBackground = highQualityBackground {
-            context.draw(hqBackground.cgImage!, in: bounds)
-        }
+        context.setFillColor(UIColor.white.cgColor)
+        context.fill(pageRect)
+        //context.setShadow(offset: CGSize(width: 0, height: 5), blur: 10) // TODO: readd shadows
+        context.drawPDFPage(page)
+        //context.setShadow(offset: CGSize(width: 0, height: 0), blur: 0)
         context.clip(to: pageRect)
-
-        // draw active stroke
-        if let stroke = delegate?.strokeCollection?.activeStroke {
-            // Set stroke color
-            stroke.color.setStroke()
-            
-            // Draw known part of stroke
-            if let path = stroke.path {
-                path.lineCapStyle = .round
-                path.lineJoinStyle = .round
-                path.lineWidth = stroke.width
-                path.stroke()
-            }
-
-            // Draw predicted path if exists
-            if let predictedPath = stroke.predictedPath {
-                if drawPredictedStroke {
-                    predictedPath.lineCapStyle = .round
-                    predictedPath.lineJoinStyle = .round
-                    predictedPath.lineWidth = stroke.width
-                    predictedPath.stroke(with: .normal, alpha: 0.2)
-                }
-            }
+        
+        // Draw all previous strokes
+        self.delegate?.strokeCollection?.strokes.forEach() { draw(stroke: $0) }
+        
+        // Draw active stroke
+        if let stroke = self.delegate?.strokeCollection?.activeStroke {
+            draw(stroke: stroke, showPredicted: drawPredictedStroke)
         }
-        context.restoreGState()
     }
 }

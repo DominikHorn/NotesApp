@@ -34,23 +34,24 @@
                         <rect key="frame" x="0.0" y="0.0" width="1112" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" alwaysBounceHorizontal="YES" maximumZoomScale="10" translatesAutoresizingMaskIntoConstraints="NO" id="Vr0-xo-uxB" customClass="InkScrollView" customModule="NotesApp" customModuleProvider="target">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" alwaysBounceHorizontal="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" maximumZoomScale="10" translatesAutoresizingMaskIntoConstraints="NO" id="Vr0-xo-uxB" customClass="InkScrollView" customModule="NotesApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="64" width="1112" height="770"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ws7-R9-FZb" customClass="InkView" customModule="NotesApp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="1112" height="834"/>
+                                        <rect key="frame" x="235" y="0.0" width="642" height="834"/>
                                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="834" id="240-uC-miq"/>
+                                            <constraint firstAttribute="width" constant="642" id="xU5-1t-b34"/>
                                         </constraints>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="ws7-R9-FZb" firstAttribute="centerX" secondItem="Vr0-xo-uxB" secondAttribute="centerX" id="7Ek-wh-GnD"/>
+                                    <constraint firstItem="ws7-R9-FZb" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Vr0-xo-uxB" secondAttribute="leading" id="82a-OP-AR9"/>
                                     <constraint firstItem="ws7-R9-FZb" firstAttribute="top" secondItem="Vr0-xo-uxB" secondAttribute="top" id="HiN-XQ-jea"/>
-                                    <constraint firstAttribute="trailing" secondItem="ws7-R9-FZb" secondAttribute="trailing" id="Lt2-Ab-bI4"/>
-                                    <constraint firstItem="ws7-R9-FZb" firstAttribute="leading" secondItem="Vr0-xo-uxB" secondAttribute="leading" id="PE2-99-nQ7"/>
+                                    <constraint firstAttribute="trailing" secondItem="ws7-R9-FZb" secondAttribute="trailing" id="SCG-eb-hPh"/>
                                     <constraint firstAttribute="bottom" secondItem="ws7-R9-FZb" secondAttribute="bottom" constant="-64" id="iC4-a2-8BW"/>
                                 </constraints>
                                 <connections>
@@ -117,6 +118,8 @@
                     <connections>
                         <outlet property="inkScrollView" destination="Vr0-xo-uxB" id="sI9-OK-Wlw"/>
                         <outlet property="inkView" destination="ws7-R9-FZb" id="G5b-nL-zom"/>
+                        <outlet property="inkViewHeight" destination="240-uC-miq" id="mYU-IU-r8y"/>
+                        <outlet property="inkViewWidth" destination="xU5-1t-b34" id="SFq-r4-g4f"/>
                         <outlet property="redoBarButton" destination="wZg-KX-kNd" id="vOU-pe-Ohi"/>
                         <outlet property="undoBarButton" destination="LqA-pP-3Cy" id="YEv-2f-Adj"/>
                     </connections>

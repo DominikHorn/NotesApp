@@ -13,6 +13,8 @@ class DocumentViewController: UIViewController, InkDelegate {
     @IBOutlet weak var inkScrollView: InkScrollView!
     @IBOutlet weak var undoBarButton: UIBarButtonItem!
     @IBOutlet weak var redoBarButton: UIBarButtonItem!
+    @IBOutlet weak var inkViewWidth: NSLayoutConstraint!
+    @IBOutlet weak var inkViewHeight: NSLayoutConstraint!
     
     // Touch types that trigger inking
     var inkSources = [UITouchType.stylus]
@@ -101,6 +103,13 @@ extension DocumentViewController {
         return inkSources.contains(touch.type)
     }
     
+    func updateContentSize(_ size: CGSize) {
+        inkScrollView.contentSize = size
+        inkViewWidth.constant = size.width
+        inkViewHeight.constant = size.height
+        inkScrollView.setNeedsLayout()
+    }
+    
     func acceptActiveStroke() {        
         undoman.registerUndo(withTarget: self) { $0.deleteLastStroke() }
         if !undoman.isRedoing {
@@ -110,7 +119,7 @@ extension DocumentViewController {
         undoBarButton.isEnabled = true
         redoBarButton.isEnabled = undoman.canRedo
         strokeCollection?.acceptActiveStroke()
-        inkView.fullRedraw()
+        inkView.setNeedsDisplay()
     }
     
     func deleteLastStroke() {
@@ -121,7 +130,7 @@ extension DocumentViewController {
         }
         
         redoBarButton.isEnabled = true
-        inkView.fullRedraw()
+        inkView.setNeedsDisplay()
     }
     
     func getBackgroundPdfURL() -> URL? {
@@ -146,8 +155,7 @@ extension DocumentViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        // TODO: other interface
-        inkView.fullRedraw()
+        // TODO: implement
     }
 }
 
