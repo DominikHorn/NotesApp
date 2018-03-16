@@ -102,6 +102,12 @@ extension DocumentViewController {
     func setScrollViewEnabled(bool: Bool) {
         inkScrollView.isScrollEnabled = bool
         inkScrollView.pinchGestureRecognizer?.isEnabled = bool
+        
+        
+        // Stop scroll view from scrolling
+        if !bool {
+            inkScrollView.setContentOffset(inkScrollView.contentOffset, animated: false)
+        }
     }
     
     func shouldInkFor(touch: UITouch) -> Bool {
