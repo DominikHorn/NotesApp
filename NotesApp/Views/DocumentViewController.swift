@@ -13,6 +13,7 @@ class DocumentViewController: UIViewController, InkDelegate {
     @IBOutlet weak var inkScrollView: InkScrollView!
     @IBOutlet weak var undoBarButton: UIBarButtonItem!
     @IBOutlet weak var redoBarButton: UIBarButtonItem!
+    
     @IBOutlet weak var inkViewWidth: NSLayoutConstraint!
     @IBOutlet weak var inkViewHeight: NSLayoutConstraint!
     
@@ -47,6 +48,7 @@ class DocumentViewController: UIViewController, InkDelegate {
         
         // Setup scrollview
         inkScrollView.panGestureRecognizer.allowedTouchTypes = [UITouchType.direct.rawValue as NSNumber]
+        inkScrollView.contentInset = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 50)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -115,10 +117,16 @@ extension DocumentViewController {
     }
     
     func updateContentSize(_ size: CGSize) {
-        inkScrollView.contentSize = size
+        // Update content view size by updating constraints
         inkViewWidth.constant = size.width
         inkViewHeight.constant = size.height
-        inkScrollView.setNeedsLayout()
+        
+        // Update scrollview content size
+        inkScrollView.contentSize = size
+        
+        // Center content view within scrollview
+        inkView.centerXAnchor.constraint(equalTo: inkScrollView.contentLayoutGuide.centerXAnchor)
+        inkView.centerYAnchor.constraint(equalTo: inkScrollView.contentLayoutGuide.centerYAnchor)
     }
     
     func acceptActiveStroke() {        

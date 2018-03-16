@@ -38,7 +38,7 @@
                                 <rect key="frame" x="0.0" y="64" width="1112" height="770"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ws7-R9-FZb" customClass="InkView" customModule="NotesApp" customModuleProvider="target">
-                                        <rect key="frame" x="235" y="0.0" width="642" height="834"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="642" height="834"/>
                                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="834" id="240-uC-miq"/>
@@ -48,11 +48,10 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="ws7-R9-FZb" firstAttribute="centerX" secondItem="Vr0-xo-uxB" secondAttribute="centerX" id="7Ek-wh-GnD"/>
-                                    <constraint firstItem="ws7-R9-FZb" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Vr0-xo-uxB" secondAttribute="leading" id="82a-OP-AR9"/>
-                                    <constraint firstItem="ws7-R9-FZb" firstAttribute="top" secondItem="Vr0-xo-uxB" secondAttribute="top" id="HiN-XQ-jea"/>
-                                    <constraint firstAttribute="trailing" secondItem="ws7-R9-FZb" secondAttribute="trailing" id="SCG-eb-hPh"/>
-                                    <constraint firstAttribute="bottom" secondItem="ws7-R9-FZb" secondAttribute="bottom" constant="-64" id="iC4-a2-8BW"/>
+                                    <constraint firstItem="ws7-R9-FZb" firstAttribute="leading" secondItem="Vr0-xo-uxB" secondAttribute="leading" id="a0R-44-TKl"/>
+                                    <constraint firstAttribute="trailing" secondItem="ws7-R9-FZb" secondAttribute="trailing" id="cQ3-xM-Wcj"/>
+                                    <constraint firstAttribute="bottom" secondItem="ws7-R9-FZb" secondAttribute="bottom" id="mjx-Rp-Fry"/>
+                                    <constraint firstItem="ws7-R9-FZb" firstAttribute="top" secondItem="Vr0-xo-uxB" secondAttribute="top" id="taq-V3-reE"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="delegate" destination="M2k-L8-Olo" id="3Wz-HW-2JJ"/>

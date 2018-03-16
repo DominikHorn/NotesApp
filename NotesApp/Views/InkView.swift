@@ -190,8 +190,10 @@ class InkView: UIView {
         //context.setShadow(offset: CGSize(width: 0, height: 5), blur: 10) // TODO: readd shadows
         context.drawPDFPage(page)
         //context.setShadow(offset: CGSize(width: 0, height: 0), blur: 0)
+
+        // Clip to bounds of page
         context.clip(to: pageRect)
-        
+
         // Draw all previous strokes
         self.delegate?.strokeCollection?.strokes.forEach() { draw(stroke: $0) }
         
