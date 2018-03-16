@@ -192,11 +192,72 @@ class InkView: UIView {
 
     // MARK: -
     // MARK: helper
+    func getAngleFrom(start: CGPoint, end: CGPoint) -> CGFloat {
+        // TODO: remove intermediate radian to degree conversion
+        return atan2(start.x - end.x, start.y - end.y)
+    }
+    
+    func lengthOf(start: CGPoint, end: CGPoint) -> CGFloat {
+        let vec = CGPoint(x: start.x - end.x, y: start.y - end.y)
+        return sqrt(vec.x * vec.x + vec.y * vec.y)
+    }
+    
+    func round(number: CGFloat, toNearestMultipleOf m: CGFloat) -> CGFloat {
+        // TODO: remove intermediate radian to degree conversion
+        var negativeResult = false
+        var tmp = number / m
+        if tmp < 0 {
+            tmp = -tmp
+            negativeResult = true
+        }
+        var rndTmp: Int = 0
+        if tmp - CGFloat(Int(tmp)) >= 0.5 {
+            rndTmp = Int(tmp) + 1
+        } else {
+            rndTmp = Int(tmp)
+        }
+        if negativeResult {
+                rndTmp = -rndTmp
+        }
+        
+        let result = m * CGFloat(rndTmp)
+        return result
+    }
+    
     func addSamples(for touches: [UITouch]) {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             if stroke.isStraight {
                 if let last = touches.last {
-                    stroke.set(samples: [stroke.samples.first!, StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))])
+                    let startStroke = stroke.samples.first!
+                    var endStroke = StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))
+                    let angle = getAngleFrom(start: startStroke.location, end: endStroke.location)
+        
+                    // TODO: remove intermediate radian to degree conversion
+                    // TODO: refactor into shape toolbar
+                    var remainder = angle.truncatingRemainder(dividingBy: snapingInterval)
+                    if remainder < 0 {
+                        remainder = -remainder
+                    }
+                    
+                    if remainder < snapingAngle || snapingInterval - remainder < snapingAngle {
+                        let snappedAngle = round(number: angle, toNearestMultipleOf: snapingInterval) + CGFloat.pi / 2.0
+                        let length = lengthOf(start: startStroke.location, end: endStroke.location)
+                        
+                        var dx = cos(snappedAngle) * length
+                        var dy = -sin(snappedAngle) * length
+                        
+                        // Fix rounding error
+                        if dx * dx < 0.0001 {
+                            dx = 0
+                        }
+                        if dy * dy < 0.0001 {
+                            dy = 0
+                        }
+                        
+                        endStroke = StrokeSample(point: CGPoint(x: startStroke.location.x + dx, y: startStroke.location.y + dy))
+                    }
+                    
+                    stroke.set(samples: [startStroke, endStroke])
                 }
             } else {
                 // Add all of the touches to the active stroke.
