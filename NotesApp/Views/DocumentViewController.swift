@@ -99,6 +99,11 @@ class DocumentViewController: UIViewController, InkDelegate {
 // MARK: -
 // MARK: InkDelegate remainder
 extension DocumentViewController {
+    func setScrollViewEnabled(bool: Bool) {
+        inkScrollView.isScrollEnabled = bool
+        inkScrollView.pinchGestureRecognizer?.isEnabled = bool
+    }
+    
     func shouldInkFor(touch: UITouch) -> Bool {
         return inkSources.contains(touch.type)
     }

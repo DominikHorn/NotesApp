@@ -21,6 +21,9 @@ protocol InkDelegate {
     // makes sure that views size gets updated to new content size
     func updateContentSize(_ size: CGSize)
     
+    // Allows view to decide if it wants pan or not. TODO: this is ugly refactor/rewrite
+    func setScrollViewEnabled(bool: Bool)
+    
     // Obtain background pdf URL
     func getBackgroundPdfURL() -> URL?
 }

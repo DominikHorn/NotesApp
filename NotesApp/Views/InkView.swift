@@ -54,6 +54,8 @@ class InkView: UIView {
     // MARK: Touch Handling methods
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if delegate?.shouldInkFor(touch: touches.first!) ?? false {
+            delegate?.setScrollViewEnabled(bool: false)
+            
             // Create a new stroke and make it the active stroke.
             let newStroke = Stroke(linewidth: currentLineWidth, color: currentColor)
             delegate?.strokeCollection?.activeStroke = newStroke
@@ -95,6 +97,9 @@ class InkView: UIView {
             // Accept the active stroke.
             delegate?.acceptActiveStroke()
             setNeedsDisplay()
+            
+            // Reenable pan and zoom
+            delegate?.setScrollViewEnabled(bool: true)
         }
     }
 
@@ -109,6 +114,9 @@ class InkView: UIView {
             } else {
                 delegate?.acceptActiveStroke()
             }
+            
+            // Reenable pan and zoom
+            delegate?.setScrollViewEnabled(bool: true)
         }
     }
 
