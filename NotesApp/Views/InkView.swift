@@ -96,7 +96,6 @@ class InkView: UIView {
 
             // Accept the active stroke.
             delegate?.acceptActiveStroke()
-            setNeedsDisplay()
             
             // Reenable pan and zoom
             delegate?.setScrollViewEnabled(bool: true)
@@ -107,13 +106,11 @@ class InkView: UIView {
         if delegate?.shouldInkFor(touch: touches.first!) ?? false {
             straightLineTimer?.invalidate()
 
-            // TODO: Figure out again why this happens ?? Clear the last stroke.
-            if delegate?.strokeCollection?.activeStroke?.isStraight == false {
-                delegate?.strokeCollection?.activeStroke = nil
-                setNeedsDisplay()
-            } else {
-                delegate?.acceptActiveStroke()
-            }
+            // Delete active stroke
+            delegate?.strokeCollection?.activeStroke = nil
+            
+            // Redraw view to remove last stroke
+            setNeedsDisplay()
             
             // Reenable pan and zoom
             delegate?.setScrollViewEnabled(bool: true)
