@@ -20,10 +20,7 @@ class InkView: UIView {
             setNeedsDisplay()
         }
     }
-    
-    // Whether or not to draw stroke prediction (Turning it on introduces horrible artifacts)
-    var drawPredictedStroke = false
-    
+
     // Timer used for handy straight line drawing feature
     var straightLineTimer: Timer?
     
@@ -83,10 +80,6 @@ class InkView: UIView {
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
             }
-
-            if let predicted = event?.predictedTouches(for: touches.first!) {
-                setPredictionTouches(predicted)
-            }
         }
     }
 
@@ -119,23 +112,13 @@ class InkView: UIView {
 
     // MARK: -
     // MARK: helper
-    func draw(stroke: Stroke, showPredicted: Bool = false) {
+    func draw(stroke: Stroke) {
         if let path = stroke.path {
             stroke.color.setStroke()
             path.lineCapStyle = .round
             path.lineJoinStyle = .round
             path.lineWidth = stroke.width
             path.stroke()
-        }
-        
-        // Draw predicted path if exists
-        if let predictedPath = stroke.predictedPath {
-            if showPredicted {
-                predictedPath.lineCapStyle = .round
-                predictedPath.lineJoinStyle = .round
-                predictedPath.lineWidth = stroke.width
-                predictedPath.stroke(with: .normal, alpha: 0.2)
-            }
         }
     }
     
@@ -166,17 +149,6 @@ class InkView: UIView {
             setNeedsDisplay()
         }
     }
-
-    // TODO: push into controller via delegate pattern
-    func setPredictionTouches(_ touches: [UITouch]) {
-        if let stroke = delegate?.strokeCollection?.activeStroke {
-            stroke.predictedSamples = []
-            for touch in touches {
-                let sample = StrokeSample(point: touch.preciseLocation(in: self))
-                stroke.addPredicted(sample: sample)
-            }
-        }
-    }
     
     override func draw(_ rect: CGRect) {
         // Do transforms
@@ -199,7 +171,7 @@ class InkView: UIView {
         
         // Draw active stroke
         if let stroke = self.delegate?.strokeCollection?.activeStroke {
-            draw(stroke: stroke, showPredicted: drawPredictedStroke)
+            draw(stroke: stroke)
         }
     }
 }
