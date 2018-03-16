@@ -102,8 +102,8 @@ class InkView: UIView {
             let newStroke = Stroke(linewidth: currentLineWidth, color: currentColor)
             delegate?.strokeCollection?.activeStroke = newStroke
 
-            // The view does not support multitouch, so get the samples
-            // for only the first touch in the event.
+
+            addSamples(for: [touches.first!])
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
             }
