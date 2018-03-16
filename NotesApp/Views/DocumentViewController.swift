@@ -10,7 +10,7 @@ import UIKit
 
 class DocumentViewController: UIViewController, InkDelegate {
     @IBOutlet weak var inkView: InkView!
-    @IBOutlet weak var inkScrollView: InkScrollView!
+    @IBOutlet weak var inkScrollView: UIScrollView!
     @IBOutlet weak var undoBarButton: UIBarButtonItem!
     @IBOutlet weak var redoBarButton: UIBarButtonItem!
     
@@ -41,14 +41,16 @@ class DocumentViewController: UIViewController, InkDelegate {
         // Make sure to correctly setup the delegate
         inkView.delegate = self
         
-        let tapRecog = UITapGestureRecognizer(target: self, action: #selector(tappedToUndo))
-        tapRecog.numberOfTapsRequired = 1
-        tapRecog.numberOfTouchesRequired = 2
-        inkView.addGestureRecognizer(tapRecog)
+        // Add undo tap recognizer TODO: rework
+        /*let undoRecog = UITapGestureRecognizer(target: self, action: #selector(tappedToUndo))
+        undoRecog.numberOfTapsRequired = 1
+        undoRecog.numberOfTouchesRequired = 2
+        inkView.addGestureRecognizer(undoRecog)*/
         
         // Setup scrollview
-        inkScrollView.panGestureRecognizer.allowedTouchTypes = [UITouchType.direct.rawValue as NSNumber]
+        inkScrollView.panGestureRecognizer.allowedTouchTypes = [UITouchType.direct.rawValue as NSNumber, UITouchType.indirect.rawValue as NSNumber]
         inkScrollView.contentInset = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 50)
+        inkScrollView.decelerationRate = UIScrollViewDecelerationRateFast
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -101,17 +103,6 @@ class DocumentViewController: UIViewController, InkDelegate {
 // MARK: -
 // MARK: InkDelegate remainder
 extension DocumentViewController {
-    func setScrollViewEnabled(bool: Bool) {
-        inkScrollView.isScrollEnabled = bool
-        inkScrollView.pinchGestureRecognizer?.isEnabled = bool
-        
-        
-        // Stop scroll view from scrolling
-        if !bool {
-            inkScrollView.setContentOffset(inkScrollView.contentOffset, animated: false)
-        }
-    }
-    
     func shouldInkFor(touch: UITouch) -> Bool {
         return inkSources.contains(touch.type)
     }
@@ -125,8 +116,8 @@ extension DocumentViewController {
         inkScrollView.contentSize = size
         
         // Center content view within scrollview
-        inkView.centerXAnchor.constraint(equalTo: inkScrollView.contentLayoutGuide.centerXAnchor)
-        inkView.centerYAnchor.constraint(equalTo: inkScrollView.contentLayoutGuide.centerYAnchor)
+        //inkView.centerXAnchor.constraint(equalTo: inkScrollView.contentLayoutGuide.centerXAnchor)
+        //inkView.centerYAnchor.constraint(equalTo: inkScrollView.contentLayoutGuide.centerYAnchor)
     }
     
     func acceptActiveStroke() {        
@@ -174,7 +165,7 @@ extension DocumentViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        // TODO: implement
+        inkView.update(contentScale: scrollView.zoomScale)
     }
 }
 

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B42A3D37205B30CE0008BDCA /* InkScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B42A3D36205B30CE0008BDCA /* InkScrollView.swift */; };
 		B43672FA202C96BA0020CE9D /* graphpaper.inkml in Resources */ = {isa = PBXBuildFile; fileRef = B43672F9202C96BA0020CE9D /* graphpaper.inkml */; };
 		B43D64CA202CB49400C21603 /* PencilPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */; };
 		B46EAF1A202CC0CE00F0299B /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46EAF19202CC0CE00F0299B /* Globals.swift */; };
@@ -45,7 +44,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B42A3D36205B30CE0008BDCA /* InkScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkScrollView.swift; sourceTree = "<group>"; };
 		B43672F9202C96BA0020CE9D /* graphpaper.inkml */ = {isa = PBXFileReference; lastKnownFileType = text; path = graphpaper.inkml; sourceTree = "<group>"; };
 		B43D64C9202CB49400C21603 /* PencilPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilPickerViewController.swift; sourceTree = "<group>"; };
 		B46EAF19202CC0CE00F0299B /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
@@ -185,7 +183,6 @@
 				B4B48685205752D30048B237 /* PencilWidthDisplay.swift */,
 				B49B7AD8202C71A000AE066C /* DocumentViewController.swift */,
 				B49B7B0B202C71DB00AE066C /* InkView.swift */,
-				B42A3D36205B30CE0008BDCA /* InkScrollView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -333,7 +330,6 @@
 				B49B7B0E202C71F600AE066C /* InkDelegate.swift in Sources */,
 				B49B7AD7202C71A000AE066C /* DocumentBrowserViewController.swift in Sources */,
 				B43D64CA202CB49400C21603 /* PencilPickerViewController.swift in Sources */,
-				B42A3D37205B30CE0008BDCA /* InkScrollView.swift in Sources */,
 				B49B7AD5202C71A000AE066C /* AppDelegate.swift in Sources */,
 				B4B48686205752D30048B237 /* PencilWidthDisplay.swift in Sources */,
 				B46EAF1A202CC0CE00F0299B /* Globals.swift in Sources */,
