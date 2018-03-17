@@ -102,8 +102,8 @@ class InkView: UIView {
             let newStroke = Stroke(linewidth: currentLineWidth, color: currentColor)
             delegate?.strokeCollection?.activeStroke = newStroke
 
-            // The view does not support multitouch, so get the samples
-            // for only the first touch in the event.
+
+            addSamples(for: [touches.first!])
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
             }
@@ -113,6 +113,25 @@ class InkView: UIView {
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // TODO: calc translation
+        var transl = CGPoint(x: 0, y: 0)
+        if touches.count == 2 {
+            for touch in touches {
+                let touchloc = touch.location(in: self)
+                let prevloc = touch.previousLocation(in: self)
+                transl.x += touchloc.x - prevloc.x
+                transl.y += touchloc.y - prevloc.y
+            }
+            transl.x /= CGFloat(touches.count)
+            transl.y /= CGFloat(touches.count)
+        } else {
+            let l = touches.first!.location(in: self)
+            let pl = touches.first!.previousLocation(in: self)
+            transl.x = l.x - pl.x
+            transl.y = l.y - pl.y
+        }
+        
+        // TODO: rework with translation
         if inkSources.contains(touches.first!.type) {
             if let prevloc = touches.first?.precisePreviousLocation(in: self) {
                 if let loc = touches.first?.preciseLocation(in: self) {
@@ -130,27 +149,20 @@ class InkView: UIView {
                 setPredictionTouches(predicted)
             }
         } else if delegate?.strokeCollection?.activeStroke == nil {
-            var transl = CGPoint(x: 0, y: 0)
-            if touches.count == 2 {
-                for touch in touches {
-                    let touchloc = touch.location(in: self)
-                    let prevloc = touch.previousLocation(in: self)
-                    transl.x += touchloc.x - prevloc.x
-                    transl.y += touchloc.y - prevloc.y
-                }
-                transl.x /= CGFloat(touches.count)
-                transl.y /= CGFloat(touches.count)
-            } else {
-                let l = touches.first!.location(in: self)
-                let pl = touches.first!.previousLocation(in: self)
-                transl.x = l.x - pl.x
-                transl.y = l.y - pl.y
-            }
-
             inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
             self.invalidateHighQualityBackground()
             setNeedsDisplay()
         } else {
+            if let stro = delegate?.strokeCollection?.activeStroke {
+                if stro.isStraight {
+                    let dampfac: CGFloat = 0.2
+                
+                    for i in 0..<stro.samples.count {
+                        stro.samples[i] = StrokeSample(point: CGPoint(x: stro.samples[i].location.x + transl.x * dampfac, y: stro.samples[i].location.y + transl.y * dampfac))
+                    }
+                }
+            }
+            
             if highQualityBackground == nil {
                 redrawHighQualityBackground()
             }
@@ -192,11 +204,72 @@ class InkView: UIView {
 
     // MARK: -
     // MARK: helper
+    func getAngleFrom(start: CGPoint, end: CGPoint) -> CGFloat {
+        // TODO: remove intermediate radian to degree conversion
+        return atan2(start.x - end.x, start.y - end.y)
+    }
+    
+    func lengthOf(start: CGPoint, end: CGPoint) -> CGFloat {
+        let vec = CGPoint(x: start.x - end.x, y: start.y - end.y)
+        return sqrt(vec.x * vec.x + vec.y * vec.y)
+    }
+    
+    func round(number: CGFloat, toNearestMultipleOf m: CGFloat) -> CGFloat {
+        // TODO: remove intermediate radian to degree conversion
+        var negativeResult = false
+        var tmp = number / m
+        if tmp < 0 {
+            tmp = -tmp
+            negativeResult = true
+        }
+        var rndTmp: Int = 0
+        if tmp - CGFloat(Int(tmp)) >= 0.5 {
+            rndTmp = Int(tmp) + 1
+        } else {
+            rndTmp = Int(tmp)
+        }
+        if negativeResult {
+                rndTmp = -rndTmp
+        }
+        
+        let result = m * CGFloat(rndTmp)
+        return result
+    }
+    
     func addSamples(for touches: [UITouch]) {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             if stroke.isStraight {
                 if let last = touches.last {
-                    stroke.set(samples: [stroke.samples.first!, StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))])
+                    let startStroke = stroke.samples.first!
+                    var endStroke = StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))
+                    let angle = getAngleFrom(start: startStroke.location, end: endStroke.location)
+        
+                    // TODO: remove intermediate radian to degree conversion
+                    // TODO: refactor into shape toolbar
+                    var remainder = angle.truncatingRemainder(dividingBy: snapingInterval)
+                    if remainder < 0 {
+                        remainder = -remainder
+                    }
+                    
+                    if remainder < snapingAngle || snapingInterval - remainder < snapingAngle {
+                        let snappedAngle = round(number: angle, toNearestMultipleOf: snapingInterval) + CGFloat.pi / 2.0
+                        let length = lengthOf(start: startStroke.location, end: endStroke.location)
+                        
+                        var dx = cos(snappedAngle) * length
+                        var dy = -sin(snappedAngle) * length
+                        
+                        // Fix rounding error
+                        if dx * dx < 0.0001 {
+                            dx = 0
+                        }
+                        if dy * dy < 0.0001 {
+                            dy = 0
+                        }
+                        
+                        endStroke = StrokeSample(point: CGPoint(x: startStroke.location.x + dx, y: startStroke.location.y + dy))
+                    }
+                    
+                    stroke.set(samples: [startStroke, endStroke])
                 }
             } else {
                 // Add all of the touches to the active stroke.
