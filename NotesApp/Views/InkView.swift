@@ -113,6 +113,25 @@ class InkView: UIView {
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // TODO: calc translation
+        var transl = CGPoint(x: 0, y: 0)
+        if touches.count == 2 {
+            for touch in touches {
+                let touchloc = touch.location(in: self)
+                let prevloc = touch.previousLocation(in: self)
+                transl.x += touchloc.x - prevloc.x
+                transl.y += touchloc.y - prevloc.y
+            }
+            transl.x /= CGFloat(touches.count)
+            transl.y /= CGFloat(touches.count)
+        } else {
+            let l = touches.first!.location(in: self)
+            let pl = touches.first!.previousLocation(in: self)
+            transl.x = l.x - pl.x
+            transl.y = l.y - pl.y
+        }
+        
+        // TODO: rework with translation
         if inkSources.contains(touches.first!.type) {
             if let prevloc = touches.first?.precisePreviousLocation(in: self) {
                 if let loc = touches.first?.preciseLocation(in: self) {
@@ -130,27 +149,17 @@ class InkView: UIView {
                 setPredictionTouches(predicted)
             }
         } else if delegate?.strokeCollection?.activeStroke == nil {
-            var transl = CGPoint(x: 0, y: 0)
-            if touches.count == 2 {
-                for touch in touches {
-                    let touchloc = touch.location(in: self)
-                    let prevloc = touch.previousLocation(in: self)
-                    transl.x += touchloc.x - prevloc.x
-                    transl.y += touchloc.y - prevloc.y
-                }
-                transl.x /= CGFloat(touches.count)
-                transl.y /= CGFloat(touches.count)
-            } else {
-                let l = touches.first!.location(in: self)
-                let pl = touches.first!.previousLocation(in: self)
-                transl.x = l.x - pl.x
-                transl.y = l.y - pl.y
-            }
-
             inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
             self.invalidateHighQualityBackground()
             setNeedsDisplay()
         } else {
+            if let stro = delegate?.strokeCollection?.activeStroke {
+                if stro.isStraight {
+                    let dampfac: CGFloat = 0.2
+                    stro.samples[0] = StrokeSample(point: CGPoint(x: stro.samples[0].location.x + transl.x * dampfac, y: stro.samples[0].location.y + transl.y * dampfac))
+                }
+            }
+            
             if highQualityBackground == nil {
                 redrawHighQualityBackground()
             }
