@@ -63,13 +63,13 @@
                                             </barButtonItem>
                                         </leftBarButtonItems>
                                         <rightBarButtonItems>
-                                            <barButtonItem enabled="NO" systemItem="redo" id="wZg-KX-kNd">
+                                            <barButtonItem enabled="NO" image="RedoButton" landscapeImage="RedoButton" id="wZg-KX-kNd">
                                                 <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <connections>
                                                     <action selector="redo:" destination="M2k-L8-Olo" id="EK6-ub-N81"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem enabled="NO" systemItem="undo" id="LqA-pP-3Cy">
+                                            <barButtonItem enabled="NO" image="UndoImage" landscapeImage="UndoImage" id="LqA-pP-3Cy">
                                                 <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <connections>
                                                     <action selector="undo:" destination="M2k-L8-Olo" id="HEA-67-usP"/>
@@ -103,7 +103,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1029.5999999999999" y="653.52323838080963"/>
+            <point key="canvasLocation" x="752" y="654"/>
         </scene>
         <!--Pencil Picker-->
         <scene sceneID="Jb1-Bp-Qks">
@@ -224,7 +224,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="U9u-lm-mja" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1392.6258992805756" y="-177.69784172661872"/>
+            <point key="canvasLocation" x="752" y="-55"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="RedoButton" width="24" height="24"/>
+        <image name="UndoImage" width="24" height="24"/>
+    </resources>
 </document>
