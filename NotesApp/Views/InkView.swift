@@ -156,7 +156,10 @@ class InkView: UIView {
             if let stro = delegate?.strokeCollection?.activeStroke {
                 if stro.isStraight {
                     let dampfac: CGFloat = 0.2
-                    stro.samples[0] = StrokeSample(point: CGPoint(x: stro.samples[0].location.x + transl.x * dampfac, y: stro.samples[0].location.y + transl.y * dampfac))
+                
+                    for i in 0..<stro.samples.count {
+                        stro.samples[i] = StrokeSample(point: CGPoint(x: stro.samples[i].location.x + transl.x * dampfac, y: stro.samples[i].location.y + transl.y * dampfac))
+                    }
                 }
             }
             
