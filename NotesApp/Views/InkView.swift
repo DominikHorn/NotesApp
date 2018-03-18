@@ -307,12 +307,12 @@ class InkView: UIView {
         guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
 
         let pageRect = page.getBoxRect(.mediaBox)
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: pageRect.width*2, height: pageRect.height*2))
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: pageRect.width, height: pageRect.height))
         self.cachedBackground = renderer.image { ctx in
             // Draw background pdf
             UIColor.white.setFill()
             ctx.cgContext.interpolationQuality = .high
-            ctx.cgContext.scaleBy(x: 2, y: -2)
+            ctx.cgContext.scaleBy(x: 1, y: -1)
             ctx.cgContext.translateBy(x: 0, y: -pageRect.height)
             ctx.cgContext.fill(pageRect)
             ctx.cgContext.drawPDFPage(page)
