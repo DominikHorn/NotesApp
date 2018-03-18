@@ -10,5 +10,6 @@ import UIKit
 
 var currentColor = UIColor(displayP3Red: 0, green: 0, blue: 0.5, alpha: 1)
 var currentLineWidth: CGFloat = 1.0
-var snapingInterval: CGFloat = CGFloat.pi / 4 // 45 degrees
-var snapingAngle: CGFloat = CGFloat.pi / 50 // ~7 degrees
+var snappingStep: CGFloat = CGFloat.pi / 4 // 45 degrees
+var snappingInterval: CGFloat = CGFloat.pi / 50 // ~7 degrees
+var shouldSnap: Bool = true

@@ -246,13 +246,13 @@ class InkView: UIView {
         
                     // TODO: remove intermediate radian to degree conversion
                     // TODO: refactor into shape toolbar
-                    var remainder = angle.truncatingRemainder(dividingBy: snapingInterval)
+                    var remainder = angle.truncatingRemainder(dividingBy: snappingStep)
                     if remainder < 0 {
                         remainder = -remainder
                     }
                     
-                    if remainder < snapingAngle || snapingInterval - remainder < snapingAngle {
-                        let snappedAngle = round(number: angle, toNearestMultipleOf: snapingInterval) + CGFloat.pi / 2.0
+                    if shouldSnap && (remainder < snappingInterval || snappingStep - remainder < snappingInterval) {
+                        let snappedAngle = round(number: angle, toNearestMultipleOf: snappingStep) + CGFloat.pi / 2.0
                         let length = lengthOf(start: startStroke.location, end: endStroke.location)
                         
                         var dx = cos(snappedAngle) * length
