@@ -21,7 +21,6 @@ struct StrokeSample {
 class Stroke {
     // Samples are actual samples that the user saw
     var samples = [StrokeSample]()
-    var predictedSamples = [StrokeSample]()
     var width: CGFloat
     var color: UIColor
     var isStraight: Bool = false
@@ -37,19 +36,10 @@ class Stroke {
             return pathStore
         }
     }
-    var predictedPath: UIBezierPath? {
-        get {
-            return calculatePath(samples: [samples[samples.count-1]] + predictedSamples)
-        }
-    }
     
     init(linewidth: CGFloat, color: UIColor) {
         self.width = linewidth
         self.color = color
-    }
-    
-    func addPredicted(sample: StrokeSample) {
-        predictedSamples.append(sample)
     }
     
     func add(sample: StrokeSample) {
@@ -61,7 +51,6 @@ class Stroke {
     
     func set(samples: [StrokeSample]) {
         self.samples = samples
-        predictedSamples = []
     }
     
     func calculatePath(samples: [StrokeSample]) -> UIBezierPath {

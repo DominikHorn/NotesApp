@@ -21,8 +21,8 @@ class InkView: UIView {
             inkTransform = CGAffineTransform(translationX: self.bounds.width/2 - pageRect.width/2, y: 0)
         }
     }
+    
     var inkSources = [UITouchType.stylus]
-    var drawPredictedStroke = false
     
     var cachedBackground: UIImage?
     var highQualityBackground: UIImage?
@@ -143,10 +143,6 @@ class InkView: UIView {
 
             if let coalesced = event?.coalescedTouches(for: touches.first!) {
                 addSamples(for: coalesced)
-            }
-
-            if let predicted = event?.predictedTouches(for: touches.first!) {
-                setPredictionTouches(predicted)
             }
         } else if delegate?.strokeCollection?.activeStroke == nil {
             inkTransform = inkTransform.concatenating(CGAffineTransform(translationX: transl.x, y: transl.y))
@@ -290,16 +286,6 @@ class InkView: UIView {
         }
     }
 
-    func setPredictionTouches(_ touches: [UITouch]) {
-        if let stroke = delegate?.strokeCollection?.activeStroke {
-            stroke.predictedSamples = []
-            for touch in touches {
-                let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
-                stroke.addPredicted(sample: sample)
-            }
-        }
-    }
-
     // MARK: -
     // MARK: rendering
     private func redrawBackground() {
@@ -413,16 +399,6 @@ class InkView: UIView {
                 path.lineJoinStyle = .round
                 path.lineWidth = stroke.width
                 path.stroke()
-            }
-
-            // Draw predicted path if exists
-            if let predictedPath = stroke.predictedPath {
-                if drawPredictedStroke {
-                    predictedPath.lineCapStyle = .round
-                    predictedPath.lineJoinStyle = .round
-                    predictedPath.lineWidth = stroke.width
-                    predictedPath.stroke(with: .normal, alpha: 0.2)
-                }
             }
         }
         context.restoreGState()
