@@ -356,7 +356,7 @@ class InkView: UIView {
                 }
             }
             
-            DispatchQueue.main.async {
+            DispatchQueue.main.sync {
                 self.setNeedsDisplay()
             }
         }
@@ -387,18 +387,20 @@ class InkView: UIView {
         }
         context.concatenate(inkTransform)
         context.clip(to: pageRect)
-
+        
         // draw active stroke
-        if let stroke = delegate?.strokeCollection?.activeStroke {
-            // Set stroke color
-            stroke.color.setStroke()
-            
-            // Draw known part of stroke
-            if let path = stroke.path {
-                path.lineCapStyle = .round
-                path.lineJoinStyle = .round
-                path.lineWidth = stroke.width
-                path.stroke()
+        for s in [delegate?.strokeCollection?.previousStroke, delegate?.strokeCollection?.activeStroke] {
+            if let stroke = s {
+                // Set stroke color
+                stroke.color.setStroke()
+                
+                // Draw known part of stroke
+                if let path = stroke.path {
+                    path.lineCapStyle = .round
+                    path.lineJoinStyle = .round
+                    path.lineWidth = stroke.width
+                    path.stroke()
+                }
             }
         }
         context.restoreGState()

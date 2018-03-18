@@ -70,11 +70,13 @@ class Stroke {
 class StrokeCollection {
     var strokes = [Stroke]()
     var activeStroke: Stroke? = nil
+    var previousStroke: Stroke? = nil
     
     func acceptActiveStroke() {
         if let stroke = activeStroke {
             stroke.pathIsDirty = false
             strokes.append(stroke)
+            previousStroke = activeStroke
             activeStroke = nil
         }
     }
