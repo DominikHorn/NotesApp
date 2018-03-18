@@ -61,6 +61,14 @@
                                                     </segue>
                                                 </connections>
                                             </barButtonItem>
+                                            <barButtonItem title="Shape" id="aJq-f1-AvR">
+                                                <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <connections>
+                                                    <segue destination="9Jd-q2-udy" kind="popoverPresentation" popoverAnchorBarButtonItem="aJq-f1-AvR" id="6B4-JB-Ehw">
+                                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                                    </segue>
+                                                </connections>
+                                            </barButtonItem>
                                         </leftBarButtonItems>
                                         <rightBarButtonItems>
                                             <barButtonItem enabled="NO" image="RedoButton" landscapeImage="RedoButton" id="wZg-KX-kNd">
@@ -73,14 +81,6 @@
                                                 <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <connections>
                                                     <action selector="undo:" destination="M2k-L8-Olo" id="HEA-67-usP"/>
-                                                </connections>
-                                            </barButtonItem>
-                                            <barButtonItem title="Shape" id="aJq-f1-AvR">
-                                                <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <connections>
-                                                    <segue destination="9Jd-q2-udy" kind="popoverPresentation" popoverAnchorBarButtonItem="aJq-f1-AvR" id="6B4-JB-Ehw">
-                                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                                    </segue>
                                                 </connections>
                                             </barButtonItem>
                                         </rightBarButtonItems>
