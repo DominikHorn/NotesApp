@@ -26,16 +26,7 @@ class Stroke {
     var isStraight: Bool = false
     
     private var pathStore: UIBezierPath?
-    fileprivate var pathIsDirty: Bool = false
-    var path: UIBezierPath? {
-        get {
-            if pathIsDirty {
-                pathStore = calculatePath(samples: samples)
-            }
-            
-            return pathStore
-        }
-    }
+    var path: UIBezierPath?
     
     init(linewidth: CGFloat, color: UIColor) {
         self.width = linewidth
@@ -45,12 +36,17 @@ class Stroke {
     func add(sample: StrokeSample) {
         samples.append(sample)
         
-        // Force Path to update on next retrieval
-        pathIsDirty = true
+        if let p = path {
+            p.addLine(to: sample.location)
+        } else {
+            path = UIBezierPath()
+            path?.move(to: sample.location)
+        }
     }
     
     func set(samples: [StrokeSample]) {
         self.samples = samples
+        path = calculatePath(samples: self.samples)
     }
     
     func calculatePath(samples: [StrokeSample]) -> UIBezierPath {
@@ -74,7 +70,6 @@ class StrokeCollection {
     
     func acceptActiveStroke() {
         if let stroke = activeStroke {
-            stroke.pathIsDirty = false
             strokes.append(stroke)
             previousStroke = activeStroke
             activeStroke = nil
