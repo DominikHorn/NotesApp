@@ -87,8 +87,13 @@ class DocumentViewController: UIViewController, InkDelegate {
     }
 }
 
-// TODO: comment
+// MARK: -
+// MARK: InkDelegate impl
 extension DocumentViewController {
+    func shouldInkFor(touch: UITouch) -> Bool {
+        return [UITouchType.stylus].contains(touch.type)
+    }
+    
     func acceptActiveStroke() {        
         undoman.registerUndo(withTarget: self) { $0.deleteLastStroke() }
         if !undoman.isRedoing {

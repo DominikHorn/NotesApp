@@ -21,9 +21,7 @@ class InkView: UIView {
             inkTransform = CGAffineTransform(translationX: self.bounds.width/2 - pageRect.width/2, y: 0)
         }
     }
-    
-    var inkSources = [UITouchType.stylus]
-    
+
     var cachedBackground: UIImage?
     var highQualityBackground: UIImage?
 
@@ -97,7 +95,7 @@ class InkView: UIView {
     // MARK: -
     // MARK: Touch Handling methods
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if inkSources.contains(touches.first!.type) {
+        if delegate?.shouldInkFor(touch: touches.first!) ?? false {
             // Create a new stroke and make it the active stroke.
             let newStroke = Stroke(linewidth: currentLineWidth, color: currentColor)
             delegate?.strokeCollection?.activeStroke = newStroke
@@ -132,7 +130,7 @@ class InkView: UIView {
         }
         
         // TODO: rework with translation
-        if inkSources.contains(touches.first!.type) {
+        if delegate?.shouldInkFor(touch: touches.first!) ?? false {
             if let prevloc = touches.first?.precisePreviousLocation(in: self) {
                 if let loc = touches.first?.preciseLocation(in: self) {
                     if (loc.x - prevloc.x)*(loc.x - prevloc.x) + (loc.y - prevloc.y)*(loc.y - prevloc.y) > 0.1 {
@@ -166,7 +164,7 @@ class InkView: UIView {
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if inkSources.contains(touches.first!.type) {
+        if delegate?.shouldInkFor(touch: touches.first!) ?? false {
             straightLineTimer?.invalidate()
 
             // Accept the active stroke.
@@ -181,7 +179,7 @@ class InkView: UIView {
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if inkSources.contains(touches.first!.type) {
+        if delegate?.shouldInkFor(touch: touches.first!) ?? false {
             straightLineTimer?.invalidate()
 
             // Clear the last stroke.

@@ -11,6 +11,9 @@ import UIKit
 protocol InkDelegate {
     var strokeCollection: StrokeCollection? { get set }
     
+    func shouldInkFor(touch: UITouch) -> Bool
+    
     func acceptActiveStroke()
+    
     func getBackgroundPdfURL() -> URL?
 }
