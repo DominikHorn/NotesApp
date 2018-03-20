@@ -152,7 +152,7 @@ class InkView: UIView {
                     let dampfac: CGFloat = 0.2
                 
                     for i in 0..<stro.samples.count {
-                        stro.samples[i] = StrokeSample(point: CGPoint(x: stro.samples[i].location.x + transl.x * dampfac, y: stro.samples[i].location.y + transl.y * dampfac))
+                        stro.samples[i] = StrokeSample(point: CGPoint(x: stro.samples[i].location.x + transl.x * dampfac, y: stro.samples[i].location.y + transl.y * dampfac), pressure: touches.first!.force)
                     }
                 }
             }
@@ -234,8 +234,9 @@ class InkView: UIView {
         if let stroke = delegate?.strokeCollection?.activeStroke {
             if stroke.isStraight {
                 if let last = touches.last {
-                    let startStroke = stroke.samples.first!
-                    var endStroke = StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()))
+                    var startStroke = stroke.samples.first!
+                    startStroke.pressure = 1.0
+                    var endStroke = StrokeSample(point: last.preciseLocation(in: self).applying(inkTransform.inverted()), pressure: 1.0)
                     let angle = getAngleFrom(start: startStroke.location, end: endStroke.location)
         
                     // TODO: remove intermediate radian to degree conversion
@@ -260,7 +261,7 @@ class InkView: UIView {
                             dy = 0
                         }
                         
-                        endStroke = StrokeSample(point: CGPoint(x: startStroke.location.x + dx, y: startStroke.location.y + dy))
+                        endStroke = StrokeSample(point: CGPoint(x: startStroke.location.x + dx, y: startStroke.location.y + dy), pressure: 1.0)
                     }
                     
                     stroke.set(samples: [startStroke, endStroke])
@@ -269,11 +270,11 @@ class InkView: UIView {
                 // Add all of the touches to the active stroke.
                 for touch in touches {
                     if touch == touches.last {
-                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()))
+                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()), pressure: touch.force)
                         stroke.add(sample: sample)
                     } else {
                         // If the touch is not the last one in the array, it was a coalesced touch.
-                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()), coalesced: true)
+                        let sample = StrokeSample(point: touch.preciseLocation(in: self).applying(inkTransform.inverted()), pressure: touch.force, coalesced: true)
                         stroke.add(sample: sample)
                     }
                 }
@@ -304,13 +305,7 @@ class InkView: UIView {
             // draw inking
             if let strokes = self.delegate?.strokeCollection?.strokes {
                 for stroke in strokes {
-                    if let path = stroke.path {
-                        stroke.color.setStroke()
-                        path.lineCapStyle = .round
-                        path.lineJoinStyle = .round
-                        path.lineWidth = stroke.width
-                        path.stroke()
-                    }
+                    stroke.draw(inContext: ctx.cgContext)
                 }
             }
         }
@@ -343,13 +338,7 @@ class InkView: UIView {
                 // draw inking
                 if let strokes = self.delegate?.strokeCollection?.strokes {
                     for stroke in strokes {
-                        if let path = stroke.path {
-                            stroke.color.setStroke()
-                            path.lineCapStyle = .round
-                            path.lineJoinStyle = .round
-                            path.lineWidth = stroke.width
-                            path.stroke()
-                        }
+                        stroke.draw(inContext: ctx.cgContext)
                     }
                 }
             }
@@ -371,20 +360,20 @@ class InkView: UIView {
         guard let pdf = delegate?.getBackgroundPdfURL() else { return }
         guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
         let pageRect = page.getBoxRect(.mediaBox)
-        let context = UIGraphicsGetCurrentContext()!
-
-        context.interpolationQuality = .default
-        context.saveGState()
-        context.saveGState()
-        context.concatenate(inkTransform)
-        context.setShadow(offset: CGSize(width: 0, height: 5), blur: 10)
-        context.draw(background.cgImage!, in: pageRect)
-        context.restoreGState()
+        let ctx = UIGraphicsGetCurrentContext()!
+        
+        ctx.interpolationQuality = .default
+        ctx.saveGState()
+        ctx.saveGState()
+        ctx.concatenate(inkTransform)
+        ctx.setShadow(offset: CGSize(width: 0, height: 5), blur: 10)
+        ctx.draw(background.cgImage!, in: pageRect)
+        ctx.restoreGState()
         if let hqBackground = highQualityBackground {
-            context.draw(hqBackground.cgImage!, in: bounds)
+            ctx.draw(hqBackground.cgImage!, in: bounds)
         }
-        context.concatenate(inkTransform)
-        context.clip(to: pageRect)
+        ctx.concatenate(inkTransform)
+        ctx.clip(to: pageRect)
         
         // draw active stroke
         for s in [delegate?.strokeCollection?.previousStroke, delegate?.strokeCollection?.activeStroke] {
@@ -393,14 +382,9 @@ class InkView: UIView {
                 stroke.color.setStroke()
                 
                 // Draw known part of stroke
-                if let path = stroke.path {
-                    path.lineCapStyle = .round
-                    path.lineJoinStyle = .round
-                    path.lineWidth = stroke.width
-                    path.stroke()
-                }
+                stroke.draw(inContext: ctx)
             }
         }
-        context.restoreGState()
+        ctx.restoreGState()
     }
 }
