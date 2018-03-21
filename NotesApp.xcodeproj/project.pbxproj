@@ -22,6 +22,7 @@
 		B49B7B09202C71BB00AE066C /* Stroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B08202C71BB00AE066C /* Stroke.swift */; };
 		B49B7B0C202C71DB00AE066C /* InkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B0B202C71DB00AE066C /* InkView.swift */; };
 		B49B7B0E202C71F600AE066C /* InkDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B7B0D202C71F600AE066C /* InkDelegate.swift */; };
+		B4AA9FD62061E52A00C7DCBF /* StrokeCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AA9FD52061E52A00C7DCBF /* StrokeCollection.swift */; };
 		B4B48686205752D30048B237 /* PencilWidthDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B48685205752D30048B237 /* PencilWidthDisplay.swift */; };
 		B4DF228F203EEF8A00A1E8D3 /* graphpaper.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B4DF228E203EEF8A00A1E8D3 /* graphpaper.pdf */; };
 		B4E2BD57205D30D50027C4D5 /* ShapesPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E2BD56205D30D50027C4D5 /* ShapesPickerViewController.swift */; };
@@ -66,6 +67,7 @@
 		B49B7B08202C71BB00AE066C /* Stroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stroke.swift; sourceTree = "<group>"; };
 		B49B7B0B202C71DB00AE066C /* InkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InkView.swift; sourceTree = "<group>"; };
 		B49B7B0D202C71F600AE066C /* InkDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InkDelegate.swift; sourceTree = "<group>"; };
+		B4AA9FD52061E52A00C7DCBF /* StrokeCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeCollection.swift; sourceTree = "<group>"; };
 		B4B48685205752D30048B237 /* PencilWidthDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilWidthDisplay.swift; sourceTree = "<group>"; };
 		B4DF228E203EEF8A00A1E8D3 /* graphpaper.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = graphpaper.pdf; sourceTree = "<group>"; };
 		B4E2BD56205D30D50027C4D5 /* ShapesPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapesPickerViewController.swift; sourceTree = "<group>"; };
@@ -171,9 +173,10 @@
 		B49B7B07202C71B300AE066C /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				B49B7B08202C71BB00AE066C /* Stroke.swift */,
-				B46EAF19202CC0CE00F0299B /* Globals.swift */,
 				B49B7ADA202C71A000AE066C /* Document.swift */,
+				B46EAF19202CC0CE00F0299B /* Globals.swift */,
+				B49B7B08202C71BB00AE066C /* Stroke.swift */,
+				B4AA9FD52061E52A00C7DCBF /* StrokeCollection.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -327,6 +330,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B49B7ADB202C71A000AE066C /* Document.swift in Sources */,
+				B4AA9FD62061E52A00C7DCBF /* StrokeCollection.swift in Sources */,
 				B49B7AD9202C71A000AE066C /* DocumentViewController.swift in Sources */,
 				B49B7B09202C71BB00AE066C /* Stroke.swift in Sources */,
 				B49B7B0C202C71DB00AE066C /* InkView.swift in Sources */,
