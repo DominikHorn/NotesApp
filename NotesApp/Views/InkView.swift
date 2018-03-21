@@ -111,7 +111,6 @@ class InkView: UIView {
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // TODO: calc translation
         var transl = CGPoint(x: 0, y: 0)
         if touches.count == 2 {
             for touch in touches {
@@ -291,19 +290,21 @@ class InkView: UIView {
 
         let pageRect = page.getBoxRect(.mediaBox)
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: pageRect.width, height: pageRect.height))
-        self.cachedBackground = renderer.image { ctx in
-            // Draw background pdf
-            UIColor.white.setFill()
-            ctx.cgContext.interpolationQuality = .high
-            ctx.cgContext.scaleBy(x: 1, y: -1)
-            ctx.cgContext.translateBy(x: 0, y: -pageRect.height)
-            ctx.cgContext.fill(pageRect)
-            ctx.cgContext.drawPDFPage(page)
+        DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
+            self.cachedBackground = renderer.image { ctx in
+                // Draw background pdf
+                UIColor.white.setFill()
+                ctx.cgContext.interpolationQuality = .high
+                ctx.cgContext.scaleBy(x: 1, y: -1)
+                ctx.cgContext.translateBy(x: 0, y: -pageRect.height)
+                ctx.cgContext.fill(pageRect)
+                ctx.cgContext.drawPDFPage(page)
 
-            // draw inking
-            if let strokes = self.delegate?.strokeCollection?.strokes {
-                for stroke in strokes {
-                    stroke.draw(inContext: ctx.cgContext)
+                // draw inking
+                if let strokes = self.delegate?.strokeCollection?.strokes {
+                    for stroke in strokes {
+                        stroke.draw(inContext: ctx.cgContext)
+                    }
                 }
             }
         }
@@ -373,6 +374,7 @@ class InkView: UIView {
         ctx.concatenate(inkTransform)
         ctx.clip(to: pageRect)
         
+        // TODO: try out if deleting helps
         // draw active stroke
         for s in [delegate?.strokeCollection?.previousStroke, delegate?.strokeCollection?.activeStroke] {
             if let stroke = s {
