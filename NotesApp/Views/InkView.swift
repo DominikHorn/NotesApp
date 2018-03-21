@@ -303,7 +303,7 @@ class InkView: UIView {
                 // draw inking
                 if let strokes = self.delegate?.strokeCollection?.strokes {
                     for stroke in strokes {
-                        stroke.draw(inContext: ctx.cgContext)
+                        stroke.draw(inRect: pageRect, withContext: ctx.cgContext)
                     }
                 }
             }
@@ -337,7 +337,7 @@ class InkView: UIView {
                 // draw inking
                 if let strokes = self.delegate?.strokeCollection?.strokes {
                     for stroke in strokes {
-                        stroke.draw(inContext: ctx.cgContext)
+                        stroke.draw(inRect: pageRect, withContext: ctx.cgContext)
                     }
                 }
             }
@@ -382,7 +382,7 @@ class InkView: UIView {
                 stroke.color.setStroke()
                 
                 // Draw known part of stroke
-                stroke.draw(inContext: ctx)
+                stroke.draw(inRect: pageRect, withContext: ctx)
             }
         }
         ctx.restoreGState()
