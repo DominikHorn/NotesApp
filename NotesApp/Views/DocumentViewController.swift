@@ -14,7 +14,8 @@ class DocumentViewController: UIViewController, InkDelegate {
     @IBOutlet weak var redoBarButton: UIBarButtonItem!
     
     var strokeCollection: StrokeCollection?
-    var undoman: UndoManager
+    var undomanager: UndoManager
+    var currentModalVC: UIViewController?
     
     var document: Document?
     
@@ -22,7 +23,7 @@ class DocumentViewController: UIViewController, InkDelegate {
     // MARK: initializing
     required init?(coder aDecoder: NSCoder) {
         strokeCollection = StrokeCollection()
-        undoman = UndoManager()
+        undomanager = UndoManager()
         
         super.init(coder: aDecoder)
     }
@@ -67,23 +68,34 @@ class DocumentViewController: UIViewController, InkDelegate {
     }
     
     @IBAction func undo(_ sender: UIBarButtonItem?) {
-        undoman.undo()
+        undomanager.undo()
         
         // Manage disabling and enabling buttons
-        if !undoman.canUndo {
+        if !undomanager.canUndo {
             undoBarButton.isEnabled = false
         }
         redoBarButton.isEnabled = true
     }
     
     @IBAction func redo(_ sender: UIBarButtonItem?) {
-        undoman.redo()
+        undomanager.redo()
         
         // Manage disabling and enabling buttons
-        if !undoman.canRedo {
+        if !undomanager.canRedo {
             redoBarButton.isEnabled = false
         }
         undoBarButton.isEnabled = true
+    }
+    
+    // MARK: -
+    // MARK: View controller handeling
+    override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+        if let cmvc = currentModalVC {
+            cmvc.dismiss(animated: false, completion: nil)
+        }
+        currentModalVC = viewControllerToPresent
+        
+        super.present(viewControllerToPresent, animated: flag, completion: completion)
     }
 }
 
@@ -95,22 +107,22 @@ extension DocumentViewController {
     }
     
     func acceptActiveStroke() {        
-        undoman.registerUndo(withTarget: self) { $0.deleteLastStroke() }
-        if !undoman.isRedoing {
-            undoman.setActionName("Add stroke")
+        undomanager.registerUndo(withTarget: self) { $0.deleteLastStroke() }
+        if !undomanager.isRedoing {
+            undomanager.setActionName("Add stroke")
         }
         
         undoBarButton.isEnabled = true
-        redoBarButton.isEnabled = undoman.canRedo
+        redoBarButton.isEnabled = undomanager.canRedo
         strokeCollection?.acceptActiveStroke()
         inkView.fullRedraw()
     }
     
     func deleteLastStroke() {
         let deletedStroke = strokeCollection?.deleteLastStroke()
-        undoman.registerUndo(withTarget: self) { $0.strokeCollection?.activeStroke = deletedStroke; $0.acceptActiveStroke() }
-        if !undoman.isUndoing {
-            undoman.setActionName("Remove last stroke")
+        undomanager.registerUndo(withTarget: self) { $0.strokeCollection?.activeStroke = deletedStroke; $0.acceptActiveStroke() }
+        if !undomanager.isUndoing {
+            undomanager.setActionName("Remove last stroke")
         }
         
         redoBarButton.isEnabled = true
@@ -123,6 +135,8 @@ extension DocumentViewController {
     }
 }
 
+// MARK: -
+// MARK: UIBarPositioningDelegate
 extension DocumentViewController: UIBarPositioningDelegate {
     func position(for bar: UIBarPositioning) -> UIBarPosition {
         return .topAttached
