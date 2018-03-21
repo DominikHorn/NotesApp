@@ -169,8 +169,6 @@ class InkView: UIView {
 
             // Accept the active stroke.
             delegate?.acceptActiveStroke()
-            redrawBackground()
-            redrawHighQualityBackground()
         } else {
             if highQualityBackground == nil {
                 redrawHighQualityBackground()
