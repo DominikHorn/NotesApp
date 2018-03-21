@@ -29,4 +29,8 @@ class ShapesPickerViewController: UIViewController {
     @IBAction func switchChanged(_ sender: Any) {
         shouldSnap = snappingSwitch.isOn
     }
+    
+    @IBAction func dismissManually(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
 }

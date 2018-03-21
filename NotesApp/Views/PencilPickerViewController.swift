@@ -40,6 +40,10 @@ class PencilPickerViewController: UIViewController {
         update()
     }
     
+    @IBAction func dismissManually(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     // MARK: -
     // MARK: helper
     func update(_ animated: Bool = false) {
