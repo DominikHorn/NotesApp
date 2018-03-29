@@ -28,6 +28,8 @@ class PencilPickerViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
         // TODO: sync with documentViewController
         update()
     }
@@ -59,5 +61,13 @@ class PencilPickerViewController: UIViewController {
         widthSlider.setValue(Float(currentLineWidth), animated: animated)
         widthLabel.text = String(format: "Width %.1f", Float(currentLineWidth))
         widthDisplay.setNeedsDisplay()
+    }
+}
+
+// MARK: -
+// MARK: UINavigationBarDelegate
+extension PencilPickerViewController: UINavigationBarDelegate {
+    func position(for bar: UIBarPositioning) -> UIBarPosition {
+        return .topAttached
     }
 }

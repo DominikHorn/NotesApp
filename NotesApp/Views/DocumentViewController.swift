@@ -12,12 +12,15 @@ class DocumentViewController: UIViewController, InkDelegate {
     @IBOutlet weak var inkView: InkView!
     @IBOutlet weak var undoBarButton: UIBarButtonItem!
     @IBOutlet weak var redoBarButton: UIBarButtonItem!
+    @IBOutlet weak var navBar: UINavigationBar!
     
     var strokeCollection: StrokeCollection?
     var undomanager: UndoManager
     var currentModalVC: UIViewController?
     
     var document: Document?
+    
+    var topOffset: CGFloat = 0.0
     
     // MARK: -
     // MARK: initializing
@@ -32,6 +35,9 @@ class DocumentViewController: UIViewController, InkDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set top offset
+        topOffset = navBar.bounds.height + UIApplication.shared.statusBarFrame.height
+        
         // Make sure to correctly setup the delegate
         inkView.delegate = self
         
@@ -43,7 +49,7 @@ class DocumentViewController: UIViewController, InkDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         // Access the document
         document?.open(completionHandler: { (success) in
             if success {

@@ -10,6 +10,8 @@ import UIKit
 
 protocol InkDelegate {
     var strokeCollection: StrokeCollection? { get set }
+
+    var topOffset: CGFloat { get }
     
     func shouldInkFor(touch: UITouch) -> Bool
     

@@ -18,7 +18,14 @@ class InkView: UIView {
             guard let page = CGPDFDocument(pdf as CFURL)?.page(at: 1) else { return }
             
             let pageRect = page.getBoxRect(.mediaBox)
-            inkTransform = CGAffineTransform(translationX: self.bounds.width/2 - pageRect.width/2, y: 0)
+
+            if let bounds = self.superview?.bounds {
+                if bounds.width > pageRect.width {
+                    inkTransform = CGAffineTransform(translationX: bounds.width/2 - pageRect.width/2, y: delegate?.topOffset ?? 0)
+                } else {
+                    inkTransform = CGAffineTransform(translationX: 0, y: delegate?.topOffset ?? 0)
+                }
+            }
         }
     }
 
@@ -27,7 +34,7 @@ class InkView: UIView {
 
     private var inkTransform = CGAffineTransform(scaleX: 1.0, y: 1.0)
     var straightLineTimer: Timer?
-
+    
     // MARK: -
     // MARK: init
     required init?(coder aDecoder: NSCoder) {

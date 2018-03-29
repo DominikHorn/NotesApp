@@ -21,6 +21,10 @@ class ShapesPickerViewController: UIViewController {
         snappingAngleLabel.text = String(format: "Snapping Angle %2.1fº", snappingStepper.value)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
     @IBAction func stepperChanged(_ sender: Any) {
         snappingStep = CGFloat(snappingStepper.value) * CGFloat.pi / 180
         snappingAngleLabel.text = String(format: "Snapping Angle %2.1fº", snappingStepper.value)
@@ -32,5 +36,13 @@ class ShapesPickerViewController: UIViewController {
     
     @IBAction func dismissManually(_ sender: Any) {
         dismiss(animated: true, completion: nil)
+    }
+}
+
+// MARK: -
+// MARK: UINavigationBarDelegate
+extension ShapesPickerViewController: UINavigationBarDelegate {
+    func position(for bar: UIBarPositioning) -> UIBarPosition {
+        return .topAttached
     }
 }
