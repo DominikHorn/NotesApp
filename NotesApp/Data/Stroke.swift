@@ -57,7 +57,7 @@ class Stroke {
     }
     
     // TODO: only attempt to draw stroke if it can actually be seen on screen
-    func draw(inRect rect: CGRect, withContext ctx: CGContext?, minPressure: CGFloat = 0.6, maxPressure: CGFloat = 1.1, maxPressureChange: CGFloat = 0.015) {
+    func draw(inRect rect: CGRect, withContext ctx: CGContext?, minPressure: CGFloat = 0.4, maxPressure: CGFloat = 1.1, maxPressureChange: CGFloat = 0.01) {
         if bounds.intersects(rect) {
             ctx?.setStrokeColor(self.color.cgColor)
             ctx?.setLineCap(.round)
